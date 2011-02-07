@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/as3-persistence-core/as3-persistence-core.iml" filepath="$PROJECT_DIR$/as3-persistence-core/as3-persistence-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/as3-persistence-sqlite/as3-persistence-sqlite.iml" filepath="$PROJECT_DIR$/as3-persistence-sqlite/as3-persistence-sqlite.iml" />
+    </modules>
+  </component>
+</project>
+

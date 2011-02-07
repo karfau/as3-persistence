@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="spectacular/Flexunit" type="flex">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../_git/drewbourne-spectacular/spectacular/bin/spectacular.swc!/" />
+      <root url="jar://$PROJECT_DIR$/../../_git/drewbourne-spectacular/spectacular/libs/FlexUnit4UIListener.swc!/" />
+      <root url="jar://$PROJECT_DIR$/../../_git/drewbourne-spectacular/spectacular/libs/asx.swc!/" />
+      <root url="jar://$PROJECT_DIR$/../../_git/drewbourne-spectacular/spectacular/libs/FlexUnit4.swc!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../../_git/drewbourne-spectacular/spectacular/src" />
+    </SOURCES>
+  </library>
+</component>
