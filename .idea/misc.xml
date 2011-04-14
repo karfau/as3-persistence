@@ -8,7 +8,7 @@
     <option name="maxMemory" />
     <option name="maxSize" value="5" />
     <option name="enable" value="true" />
-    <option name="enableAutoTask" value="true" />
+    <option name="enableAutoTask" value="false" />
     <option name="autoRunTestsDelayTime" value="1000" />
     <option name="jvmArgs" />
     <option name="clearLogConsole" value="true" />

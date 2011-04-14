@@ -1,8 +1,8 @@
 <component name="libraryTable">
-  <library name="Spicelib Subset 2.4M1" type="flex">
+  <library name="Spicelib Subset 2.4" type="flex">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../../_doc/parsley-spicelib/release/modules/spicelib-reflect-2.4.M1.swc!/" />
-      <root url="jar://$PROJECT_DIR$/../../../_doc/parsley-spicelib/release/modules/spicelib-core-2.4.M1.swc!/" />
+      <root url="jar://$PROJECT_DIR$/../../../_doc/parsley-spicelib/release/modules/spicelib-core-2.4.0.swc!/" />
+      <root url="jar://$PROJECT_DIR$/../../../_doc/parsley-spicelib/release/modules/spicelib-reflect-2.4.0.swc!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

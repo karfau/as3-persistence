@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Test Results &mdash; as3-persistence-core</title>
+<title>Test Results &mdash; as3-persistence-core(AllCoreTests)</title>
 <style type="text/css">
 html {
 	height: 100%
@@ -360,12 +360,12 @@ hr {
 		},
 		heightToggle: function(animated, callback) {
 			animated ?
-							this.animate({ height: "toggle" }, animated, callback) :
-							this.each(function() {
-								jQuery(this)[ jQuery(this).is(":hidden") ? "show" : "hide" ]();
-								if (callback)
-									callback.apply(this, arguments);
-							});
+			this.animate({ height: "toggle" }, animated, callback) :
+			this.each(function() {
+				jQuery(this)[ jQuery(this).is(":hidden") ? "show" : "hide" ]();
+				if (callback)
+					callback.apply(this, arguments);
+			});
 		},
 		heightHide: function(animated, callback) {
 			if (animated) {
@@ -388,20 +388,20 @@ hr {
 		},
 		applyClasses: function(settings, toggler) {
 			this.filter(":has(>ul):not(:has(>a))").find(">span").click(
-			                                                          function(event) {
-				                                                          toggler.apply($(this).next());
-			                                                          }).add($("a", this)).hoverClass();
+			function(event) {
+				toggler.apply($(this).next());
+			}).add($("a", this)).hoverClass();
 
 			if (!settings.prerendered) {
 				// handle closed ones first
 				this.filter(":has(>ul:hidden)")
-								.addClass(CLASSES.expandable)
-								.replaceClass(CLASSES.last, CLASSES.lastExpandable);
+				.addClass(CLASSES.expandable)
+				.replaceClass(CLASSES.last, CLASSES.lastExpandable);
 
 				// handle open ones
 				this.not(":has(>ul:hidden)")
-								.addClass(CLASSES.collapsable)
-								.replaceClass(CLASSES.last, CLASSES.lastCollapsable);
+				.addClass(CLASSES.collapsable)
+				.replaceClass(CLASSES.last, CLASSES.lastCollapsable);
 
 				// create hitarea
 				this.prepend("<div class=\"" + CLASSES.hitarea + "\"/>").find("div." + CLASSES.hitarea).each(function() {
@@ -459,31 +459,31 @@ hr {
 			// handle toggle event
 			function toggler() {
 				$(this)
-								.parent()
+				.parent()
 					// swap classes for hitarea
-								.find(">.hitarea")
-								.swapClass(CLASSES.collapsableHitarea, CLASSES.expandableHitarea)
-								.swapClass(CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea)
-								.end()
+				.find(">.hitarea")
+				.swapClass(CLASSES.collapsableHitarea, CLASSES.expandableHitarea)
+				.swapClass(CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea)
+				.end()
 					// swap classes for parent li
-								.swapClass(CLASSES.collapsable, CLASSES.expandable)
-								.swapClass(CLASSES.lastCollapsable, CLASSES.lastExpandable)
+				.swapClass(CLASSES.collapsable, CLASSES.expandable)
+				.swapClass(CLASSES.lastCollapsable, CLASSES.lastExpandable)
 					// find child lists
-								.find(">ul")
+				.find(">ul")
 					// toggle them
-								.heightToggle(settings.animated, settings.toggle);
+				.heightToggle(settings.animated, settings.toggle);
 				if (settings.unique) {
 					$(this).parent()
-									.siblings()
+					.siblings()
 						// swap classes for hitarea
-									.find(">.hitarea")
-									.replaceClass(CLASSES.collapsableHitarea, CLASSES.expandableHitarea)
-									.replaceClass(CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea)
-									.end()
-									.replaceClass(CLASSES.collapsable, CLASSES.expandable)
-									.replaceClass(CLASSES.lastCollapsable, CLASSES.lastExpandable)
-									.find(">ul")
-									.heightHide(settings.animated, settings.toggle);
+					.find(">.hitarea")
+					.replaceClass(CLASSES.collapsableHitarea, CLASSES.expandableHitarea)
+					.replaceClass(CLASSES.lastCollapsableHitarea, CLASSES.lastExpandableHitarea)
+					.end()
+					.replaceClass(CLASSES.collapsable, CLASSES.expandable)
+					.replaceClass(CLASSES.lastCollapsable, CLASSES.lastExpandable)
+					.find(">ul")
+					.heightHide(settings.animated, settings.toggle);
 				}
 			}
 
@@ -546,12 +546,12 @@ hr {
 
 			return this.bind("add", function(event, branches) {
 				$(branches).prev()
-								.removeClass(CLASSES.last)
-								.removeClass(CLASSES.lastCollapsable)
-								.removeClass(CLASSES.lastExpandable)
-								.find(">.hitarea")
-								.removeClass(CLASSES.lastCollapsableHitarea)
-								.removeClass(CLASSES.lastExpandableHitarea);
+				.removeClass(CLASSES.last)
+				.removeClass(CLASSES.lastCollapsable)
+				.removeClass(CLASSES.lastExpandable)
+				.find(">.hitarea")
+				.removeClass(CLASSES.lastCollapsableHitarea)
+				.removeClass(CLASSES.lastExpandableHitarea);
 				$(branches).find("li").andSelf().prepareBranches(settings).applyClasses(settings, toggler);
 			});
 		}
@@ -595,8 +595,8 @@ hr {
 <body>
 <div id="container">
 	<div id="header">
-		<div class="time">6 ms</div>
-		<h1>as3-persistence-core: <strong><span class="total">1 total, </span><span class="passed">1 passed</span></strong>
+		<div class="time">223 ms</div>
+		<h1>as3-persistence-core(AllCoreTests): <strong><span class="total">9 total, </span><span class="ignored">1 ignored, </span><span class="passed">8 passed</span></strong>
 		</h1>
 
 		<div id="treecontrol">
@@ -613,15 +613,74 @@ hr {
 	</div>
 	<div id="content">
 		<ul id="tree">
-			<li xmlns="" class="level top open">
+			<li xmlns="" class="level top ignored open">
 <span><em class="time">
-	<div class="time">6 ms</div>
-</em>de.karfau.as3.persistence.TestPersistentDomain</span>
+	<div class="time">131 ms</div>
+</em>de.karfau.as3.persistence.domain.TestEntityFactory</span>
+				<ul>
+					<li class="level test ignored open">
+<span><em class="time">
+	<div class="time">0 ms</div>
+</em><em class="status">ignored</em>CreatingAnEntityFromAClassWithMetatags</span>
+						<ul>
+							<li class="text">
+								<span class="stdout">Test ignored.<br/></span>
+							</li>
+						</ul>
+					</li>
+					<li class="level test">
+<span><em class="time">
+	<div class="time">131 ms</div>
+</em><em class="status">passed</em>CreatingAnEntityFromAClassWithoutMetatags</span>
+					</li>
+				</ul>
+			</li>
+			<li class="level top open">
+<span><em class="time">
+	<div class="time">68 ms</div>
+</em>de.karfau.as3.persistence.domain.type.TestTypeUtil</span>
 				<ul>
 					<li class="level test">
 <span><em class="time">
-	<div class="time">6 ms</div>
-</em><em class="status">passed</em>A PersistentDomain after being created, should not contain anything</span>
+	<div class="time">42 ms</div>
+</em><em class="status">passed</em>collectionElementTypes</span>
+					</li>
+					<li class="level test">
+<span><em class="time">
+	<div class="time">20 ms</div>
+</em><em class="status">passed</em>primitiveTypes</span>
+					</li>
+					<li class="level test">
+<span><em class="time">
+	<div class="time">4 ms</div>
+</em><em class="status">passed</em>collectionTypes</span>
+					</li>
+					<li class="level test">
+<span><em class="time">
+	<div class="time">2 ms</div>
+</em><em class="status">passed</em>numericTypes</span>
+					</li>
+				</ul>
+			</li>
+			<li class="level top open">
+<span><em class="time">
+	<div class="time">24 ms</div>
+</em>de.karfau.as3.persistence.domain.metatag.TestMetadataTags</span>
+				<ul>
+					<li class="level test">
+<span><em class="time">
+	<div class="time">22 ms</div>
+</em><em class="status">passed</em>LibProvidesMetatag_ArrayElementType</span>
+					</li>
+					<li class="level test">
+<span><em class="time">
+	<div class="time">1 ms</div>
+</em><em class="status">passed</em>LibProvidesMetatag_Id</span>
+					</li>
+					<li class="level test">
+<span><em class="time">
+	<div class="time">1 ms</div>
+</em><em class="status">passed</em>LibProvidesMetatag_Entity</span>
 					</li>
 				</ul>
 			</li>
@@ -629,7 +688,7 @@ hr {
 	</div>
 </div>
 <div id="footer">
-	<p>Generated by IntelliJ IDEA on 07.02.11 19:40</p>
+	<p>Generated by IntelliJ IDEA on 15.04.11 00:38</p>
 </div>
 </body>
 </html>
