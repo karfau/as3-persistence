@@ -8,22 +8,25 @@
 package de.karfau.as3.persistence.domain.type {
 	import mx.collections.ArrayCollection;
 
-	import org.flexunit.assertThat;
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
 	import org.flexunit.asserts.assertTrue;
+	import org.hamcrest.assertThat;
+	import org.hamcrest.collection.array;
 	import org.hamcrest.core.throws;
 	import org.hamcrest.object.instanceOf;
 	import org.spicefactory.lib.reflect.ClassInfo;
+	import org.spicefactory.lib.reflect.types.Private;
 
 	public class TestTypeUtil {
+
+		private var test:Class;
 
 		[Test]
 		public function primitiveTypes():void {
 			var _true:Array = [Boolean, int, Number, String, uint];
 			var _false:Array = [Object, null, undefined];
-			var test:Class;
 
 			for each(test in _true)
 				assertTrue(test, TypeUtil.isPrimitiveType(test));
@@ -37,7 +40,6 @@ package de.karfau.as3.persistence.domain.type {
 		public function numericTypes():void {
 			var _true:Array = [int, Number, uint];
 			var _false:Array = [Object, Boolean, String, null, undefined];
-			var test:Class;
 
 			for each(test in _true)
 				assertTrue(test, TypeUtil.isNumericType(test));
@@ -47,20 +49,48 @@ package de.karfau.as3.persistence.domain.type {
 
 		}
 
+		public static const TRUE_FOR_isCollectionType:Array =
+												[
+													//primitive types:
+													Vector.<int>, Vector.<Number>, Vector.<uint>,//based on special type
+													Vector.<Boolean>,Vector.<String>,//special: is based on Vector.<*>
+													//Objects:
+													Vector.<Object>,
+													Vector.<Vector.<String>>,//cascading
+													/*
+													 Vector.<PrivateGlobal>
+													 //is added in the Test, as it is not available yet
+													 */
+													Array, ArrayCollection//untyped
+												];
+
+		public static const FALSE_FOR_isCollectionType:Array =
+												[//TODO: Enable XMLList as Collection???
+													Vector, XML, XMLList, //not supported by isCollectionType :
+													Boolean, int, Number, uint, String,//primitives
+													Object,//complex
+													null,	undefined
+													/*
+													 PrivateGlobal
+													 //is added in the Test, as it is not available yet
+													 */
+												];
+
 		[Test]
 		public function collectionTypes():void {
-			var _true:Array = [Vector.<int>, Vector.<Number>, Vector.<String>, Vector.<uint>, Vector.<PrivateGlobal>,Vector.<Vector.<String>>, Array, ArrayCollection];
-			var _false:Array = [Vector, XML, XMLList, Object, Boolean, String];
-			var _throws:Array = [Vector.<*>,null,undefined];
-			var test:Class;
+			TRUE_FOR_isCollectionType.push(Vector.<PrivateGlobal>);
+			FALSE_FOR_isCollectionType.push(PrivateGlobal);
 
-			for each(test in _true) {
+			for each(test in TRUE_FOR_isCollectionType) {
 				assertTrue(test, TypeUtil.isCollectionType(test));
 				//trace("works for "+test);
 			}
-			for each(test in _false)
-				assertFalse("not " + test, TypeUtil.isCollectionType(test));
 
+			for each(test in FALSE_FOR_isCollectionType) {
+				assertFalse("not " + test, TypeUtil.isCollectionType(test));
+			}
+
+			var _throws:Array = [Vector.<*>];
 			for (var i:int = 0; i < _throws.length; i++) {
 				assertThat(_throws[i] + " throws", function():void {
 					var test:Class = _throws[i];
@@ -70,25 +100,62 @@ package de.karfau.as3.persistence.domain.type {
 			}
 		}
 
+		public static const SUPPORTED_BY_getCollectionElementType:Array =
+												[ //primitive types:
+													Vector.<int>, Vector.<Number>, Vector.<uint>,//based on special type
+													Vector.<Boolean>,Vector.<String>,//special: is based on Vector.<*>
+													//Objects:
+													Vector.<Object>,
+													Vector.<Vector.<String>>//cascading
+													/*
+													 Vector.<PrivateGlobal>
+													 //is added in the Test, as it is not available yet
+													 */
+												];
+
+		public static const UNSUPPORTED_RETURNING_NULL_FOR_getCollectionElementType:Array =
+												[
+
+													Array, ArrayCollection,	//no subtype
+													Vector, XML, XMLList, //not supported by isCollectionType :
+													Boolean, int, Number, uint, String,//primitives
+													Object,//complex
+													null,	undefined
+													/*
+													 PrivateGlobal
+													 //is added in the Test, as it is not available yet
+													 */
+												];
+
 		[Test]
 		public function collectionElementTypes():void {
-			var _true:Array = [Vector.<int>, Vector.<Number>, Vector.<String>, Vector.<uint>, Vector.<PrivateGlobal>, Vector.<Vector.<String>>];
-			var _false:Array = [/* Array, ArrayCollection, */Vector, XML, XMLList, Object, Boolean, String];
-			var _throws:Array = [Vector.<*>, null, undefined];
-			var test:Class;
+
+			SUPPORTED_BY_getCollectionElementType.push(Vector.<PrivateGlobal>);
+			UNSUPPORTED_RETURNING_NULL_FOR_getCollectionElementType.push(PrivateGlobal);
+			var findtrue:Array =
+					[	int, Number, uint,
+						Boolean, String,
+						Object,
+						Vector.<String>,
+						Private //Private is spicelibs special type for unreachable Classes like this one
+					];
+			var findings:Array = [];
+
 			var found:ClassInfo;
 
-			for each(test in _true) {
+			for each(test in SUPPORTED_BY_getCollectionElementType) {
 				found = TypeUtil.getCollectionElementType(test);
 				assertNotNull(test, found);
-				trace(test + " -> " + found.getClass());
+				findings.push(found.getClass());
 			}
+			assertThat("found expected types", findings, array(findtrue));
 
-			for each(test in _false) {
+			for each(test in UNSUPPORTED_RETURNING_NULL_FOR_getCollectionElementType) {
 				found = TypeUtil.getCollectionElementType(test);
 				assertNull(test, found);
 			}
 
+			var _throws:Array = [Vector.<*>];
 			for (var i:int = 0; i < _throws.length; i++) {
 				assertThat(_throws[i] + " throws", function():void {
 					var test:Class = _throws[i];

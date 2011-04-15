@@ -27,8 +27,14 @@ package de.karfau.as3.persistence.domain.type {
 		public static function isCollectionType(clazz:Class):Boolean {
 			if (isPrimitiveType(clazz))
 				return false;
-			var ci:ClassInfo = ClassInfo.forClass(clazz);
-			return (ci.getProperty("length") != null);
+			var ci:ClassInfo;
+			trace(clazz);
+			if (clazz != null) {//includes undefined: Class(undefined) -> null
+				//try{
+				ci = ClassInfo.forClass(clazz);
+				//}catch(ref:ReferenceError){/*Vector.<*>*/}
+			}
+			return ci && (ci.getProperty("length") != null);
 		}
 
 		private static const REGEXPR_VECTOR_ELEMENT_TYPE:RegExp = /Vector.<([^\s]+)>$/;
