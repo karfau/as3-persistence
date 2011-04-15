@@ -23,6 +23,7 @@ package de.karfau.as3.persistence.domain {
 	import org.spicefactory.lib.reflect.ClassInfo;
 	import org.spicefactory.lib.reflect.Metadata;
 	import org.spicefactory.lib.reflect.Property;
+	import org.spicefactory.lib.reflect.types.Private;
 
 	{
 		Metadata.registerMetadataClass(MetaTagEntity)
@@ -97,7 +98,7 @@ package de.karfau.as3.persistence.domain {
 			for each(property in properties) {
 				clazz = property.type.getClass();
 				if (!typeRegister.hasTypeFor(clazz)) {
-					typeRegister.registerType(createType(clazz));
+					typeRegister.registerType(createType(property));
 				}
 			}
 
@@ -110,14 +111,21 @@ package de.karfau.as3.persistence.domain {
 			return result;
 		}
 
-		private function createType(clazz:Class):IType {
+		private function createType(property:Property):IType {
+			const clazz:Class = property.type.getClass();//TODO:this could be Private!!!
 			if (TypeUtil.isPrimitiveType(clazz)) {
 				return new Primitive(clazz);
 			}
 			if (TypeUtil.isCollectionType(clazz)) {
 				var elementType:ClassInfo = TypeUtil.getCollectionElementType(clazz);
-				trace("elementType: " + elementType.getClass())
-				return new Collection(clazz, elementType.getClass());
+				if (elementType == null || elementType.getClass() == Private) {
+					elementType = null;
+					//TODO:elementType from Metadata?
+				}
+				if (elementType != null) {
+					//trace("elementType: " + elementType.getClass());
+					return new Collection(clazz, elementType.getClass());
+				}
 			}
 			return new Blob(clazz);
 		}
