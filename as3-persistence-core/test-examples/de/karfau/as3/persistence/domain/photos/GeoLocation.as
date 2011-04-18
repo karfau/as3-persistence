@@ -8,16 +8,19 @@
 package de.karfau.as3.persistence.domain.photos {
 	import de.karfau.as3.persistence.domain.meta;
 
+	import flash.geom.Point;
+
 	[Entity("geo")]
 	public class GeoLocation {
 
 		meta static const ENTITY_NAME:String = "geo";
+		meta static const IDENTIFIER_NAME:String = "pk";
 
 		[Id]
-		public var id:int;
+		public var pk:int;
 
 		public var height:Number;
-		//public var position:Point;
-		//public var region:String;
+		public var position:Point;
+		public var region:String;
 	}
 }

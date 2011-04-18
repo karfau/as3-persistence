@@ -15,15 +15,37 @@ package de.karfau.as3.persistence.domain.photos {
 	public class Photo {
 
 		meta static const SIMPLE_NAME:String = "Photo";
-		meta static const TYPES:Array = [String,Date,GeoLocation,Camera];
 
+		/**
+		 * this will be used as primary key because of its name.
+		 */
 		public var id:int;
 
+		/**
+		 * It depends on the implementation how this will be persisted. Could be a blob or a String like "&lt;1,2,3&gt;"
+		 */
 		public var histogram:Vector.<int>;
-		public var titel:String;
-		public var zeitpunkt:Date;
-		public var aufnahmeort:GeoLocation;
-		public var motives:Vector.<Motif>;
-		public var aufnahmegeraet:Camera;
+
+		public var title:String;
+
+		/**
+		 * Dateconversion has to take place in the implementation.
+		 */
+		public var time_of_creation:Date;
+
+		/**
+		 * "?-To-One"-Relation, unidirectional
+		 */
+		public var location:GeoLocation;
+
+		/**
+		 * "Many-To-One"-Relation, bidirectional
+		 */
+		public var device:Camera;
+
+		/**
+		 * "Many-To-Many"-Relation, bidirectional
+		 */
+		public var motifes:Vector.<Motif>;
 	}
 }

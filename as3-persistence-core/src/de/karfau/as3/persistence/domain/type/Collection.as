@@ -19,5 +19,9 @@ package de.karfau.as3.persistence.domain.type {
 			super(clazz);
 			_elementClass = elementClass;
 		}
+
+		override protected function describeInstance(...rest):Object {
+			return super.describeInstance(rest.concat({elementClass:elementClass}));
+		}
 	}
 }

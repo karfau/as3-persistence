@@ -8,15 +8,13 @@
 package de.karfau.as3.persistence.domain {
 	import de.karfau.as3.persistence.domain.type.*;
 
-	import flash.net.getClassByAlias;
 	import flash.utils.Dictionary;
-	import flash.utils.getQualifiedClassName;
 
 	public class TypeRegister {
 
 		//TODO: lock register when everything is done, so it can not be modified?
 
-		protected var priority:Array = [IType,Blob,IEntity,Entity];
+		//protected var priority:Array = [IType,Blob,IEntity,Entity];
 
 		private const types:Dictionary = new Dictionary(true);
 
@@ -25,41 +23,41 @@ package de.karfau.as3.persistence.domain {
 		}
 
 		public function registerType(type:IType, force:Boolean = false):void {
-			if (!force && hasTypeFor(type.clazz)) {
-				var current:IType = getTypeForClass(type.clazz);
-				var currentClass:Class = getClassOfInstance(current);
+			/*if (!force && hasTypeFor(type.clazz)) {
+			 var current:IType = getTypeForClass(type.clazz);
+			 var currentClass:Class = getClassOfInstance(current);
 
-				//incompatibel type or currentClass has higher rank?
-				if (!(type is currentClass) && typeClassPrio(current) > typeClassPrio(type)) {
-					throw new ArgumentError("Could not replace current registered type " + current +
-																	" with new value " + type + ".\n" +
-																	"To replace a registered type: the class of the new value " +
-																	"EITHER has to be a subclass of current values class " +
-																	"OR it has to be stronger then the current values class (ranking:" + priority + " (low,...,high).");
-				}
-			}
+			 //incompatibel type or currentClass has higher rank?
+			 if (!(type is currentClass) && typeClassPrio(current) > typeClassPrio(type)) {
+			 throw new ArgumentError("Could not replace current registered type " + current +
+			 " with new value " + type + ".\n" +
+			 "To replace a registered type: the class of the new value " +
+			 "EITHER has to be a subclass of current values class " +
+			 "OR it has to be stronger then the current values class (ranking:" + priority + " (low,...,high).");
+			 }
+			 }*/
 			types[type.clazz] = type;
 		}
 
-		private function typeClassPrio(type:IType):uint {
-			var result:int = 0;
-			var Matching:Class;
-			for (var rank:int = priority.length; rank--;) {
-				Matching = Class(priority[rank]);
-				if (type is Matching) {
-					result = rank;
-					break;
-				}
-			}
-			return result;
-		}
+		/*private function typeClassPrio(type:IType):uint {
+		 var result:int = 0;
+		 var Matching:Class;
+		 for (var rank:int = priority.length; rank--;) {
+		 Matching = Class(priority[rank]);
+		 if (type is Matching) {
+		 result = rank;
+		 break;
+		 }
+		 }
+		 return result;
+		 }*/
 
 		public function hasTypeFor(clazz:Class):Boolean {
 			return types[clazz] is IType;
 		}
 
-		protected function getClassOfInstance(typeInstance:IType):Class {
-			return getClassByAlias(getQualifiedClassName(typeInstance));
-		}
+		/*protected function getClassOfInstance(typeInstance:IType):Class {
+		 return getDefinitionByName(getQualifiedClassName(typeInstance)) as Class;
+		 }*/
 	}
 }

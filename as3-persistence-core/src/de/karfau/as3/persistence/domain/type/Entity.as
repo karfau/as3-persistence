@@ -67,8 +67,8 @@ package de.karfau.as3.persistence.domain.type {
 			return false;
 		}
 
-		override protected function describeInstance(more:Object = null):Object {
-			return super.describeInstance({persistenceName: persistenceName});
+		override protected function describeInstance(...rest):Object {
+			return super.describeInstance(rest.concat({persistenceName: persistenceName}));
 		}
 
 		public function setProperty(property:EntityProperty):Boolean {

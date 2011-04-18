@@ -55,13 +55,13 @@ package de.karfau.as3.persistence.domain.type {
 													Vector.<int>, Vector.<Number>, Vector.<uint>,//based on special type
 													Vector.<Boolean>,Vector.<String>,//special: is based on Vector.<*>
 													//Objects:
+													Array, ArrayCollection,//untyped
 													Vector.<Object>,
-													Vector.<Vector.<String>>,//cascading
+													Vector.<Vector.<String>>//cascading
 													/*
 													 Vector.<PrivateGlobal>
 													 //is added in the Test, as it is not available yet
 													 */
-													Array, ArrayCollection//untyped
 												];
 
 		public static const FALSE_FOR_isCollectionType:Array =
@@ -83,7 +83,6 @@ package de.karfau.as3.persistence.domain.type {
 
 			for each(test in TRUE_FOR_isCollectionType) {
 				assertTrue(test, TypeUtil.isCollectionType(test));
-				//trace("works for "+test);
 			}
 
 			for each(test in FALSE_FOR_isCollectionType) {
@@ -113,6 +112,14 @@ package de.karfau.as3.persistence.domain.type {
 													 */
 												];
 
+		public static const EXPECTED_FROM_SUPPORTED_BY_getCollectionElementType:Array =
+												[ //primitive types:
+													int, Number, uint, Boolean, String,
+													//Objects:
+													Object,Vector.<String>,//cascading
+													Private //Private is spicelibs special type for unreachable Classes like PrivateGlobal
+												];
+
 		public static const UNSUPPORTED_RETURNING_NULL_FOR_getCollectionElementType:Array =
 												[
 
@@ -131,14 +138,9 @@ package de.karfau.as3.persistence.domain.type {
 		public function collectionElementTypes():void {
 
 			SUPPORTED_BY_getCollectionElementType.push(Vector.<PrivateGlobal>);
+
 			UNSUPPORTED_RETURNING_NULL_FOR_getCollectionElementType.push(PrivateGlobal);
-			var findtrue:Array =
-					[	int, Number, uint,
-						Boolean, String,
-						Object,
-						Vector.<String>,
-						Private //Private is spicelibs special type for unreachable Classes like this one
-					];
+
 			var findings:Array = [];
 
 			var found:ClassInfo;
@@ -148,7 +150,7 @@ package de.karfau.as3.persistence.domain.type {
 				assertNotNull(test, found);
 				findings.push(found.getClass());
 			}
-			assertThat("found expected types", findings, array(findtrue));
+			assertThat("found expected types", findings, array(EXPECTED_FROM_SUPPORTED_BY_getCollectionElementType));
 
 			for each(test in UNSUPPORTED_RETURNING_NULL_FOR_getCollectionElementType) {
 				found = TypeUtil.getCollectionElementType(test);

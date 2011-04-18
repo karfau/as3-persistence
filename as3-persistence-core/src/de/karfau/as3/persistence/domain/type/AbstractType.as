@@ -59,11 +59,11 @@ package de.karfau.as3.persistence.domain.type {
 			return "[" + ClassUtil.getSimpleName(Object(this).constructor) + " for type <" + getQualifiedName() + ">: " + info.join("; ") + "]";
 		}
 
-		protected function describeInstance(more:Object = null):Object {
+		protected function describeInstance(...rest):Object {
 			var result:Object = {primitive:isPrimitive(),entity:!isValue()};
-			if (more) {
-				for (var key:String in more)
-					result[key] = more[key];
+			for each (var descr:Object in rest) {
+				for (var key:String in descr)
+					result[key] = descr[key];
 			}
 			return result;
 		}

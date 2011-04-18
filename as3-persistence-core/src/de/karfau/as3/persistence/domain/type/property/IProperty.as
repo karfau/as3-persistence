@@ -13,5 +13,6 @@ package de.karfau.as3.persistence.domain.type.property {
 
 		function getType():IType;
 
+		function get clazz():Class;
 	}
 }

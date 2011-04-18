@@ -6,18 +6,20 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.photos {
+	import de.karfau.as3.persistence.domain.meta;
 
 	public class Camera {
 
-		public var modell:String;
+		meta static const SIMPLE_NAME:String = "Camera";
+
+		public var model:String;
 
 		public var seriennummer:String;
-		[ArrayElementType("de.karfau.as3.persistence.domain.photos.Photo")]
-		public var photos:Array;
+
+		public var photos:Vector.<Photo>;
 
 		private var _id:int;
 
-		[Id]
 		public function get id():int {
 			return _id;
 		}

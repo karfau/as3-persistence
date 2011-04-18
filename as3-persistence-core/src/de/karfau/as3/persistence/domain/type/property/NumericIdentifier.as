@@ -7,6 +7,7 @@
  */
 package de.karfau.as3.persistence.domain.type.property {
 	import de.karfau.as3.persistence.domain.TypeRegister;
+	import de.karfau.as3.persistence.domain.type.TypeUtil;
 
 	import org.spicefactory.lib.reflect.Property;
 
@@ -14,6 +15,9 @@ package de.karfau.as3.persistence.domain.type.property {
 
 		public function NumericIdentifier(clazz:Class, typeRegister:TypeRegister) {
 			super(clazz, typeRegister);
+			//super(...) is not allowed after throw
+			if (!TypeUtil.isNumericType(clazz))
+				throw new ArgumentError("Expected a numeric class, but was " + clazz + ".");
 		}
 
 		override public function fromReflectionSource(source:Property):void {

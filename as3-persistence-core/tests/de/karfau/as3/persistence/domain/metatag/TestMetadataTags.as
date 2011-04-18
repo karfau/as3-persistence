@@ -21,9 +21,9 @@ package de.karfau.as3.persistence.domain.metatag {
 
 		[BeforeClass]
 		public static function setup():void {
-			Metadata.registerMetadataClass(MetaTagEntity)
-			Metadata.registerMetadataClass(MetaTagId)
-			Metadata.registerMetadataClass(MetaTagArrayElementType)
+			Metadata.registerMetadataClass(MetaTagEntity);
+			Metadata.registerMetadataClass(MetaTagId);
+			Metadata.registerMetadataClass(MetaTagArrayElementType);
 			//Metadata.registerMetadataClass(MetaTag)
 			ci = ClassInfo.forClass(ClassWithMetaTags);
 		}

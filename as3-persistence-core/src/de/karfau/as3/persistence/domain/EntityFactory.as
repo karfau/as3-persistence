@@ -7,13 +7,10 @@
  */
 package de.karfau.as3.persistence.domain {
 	import de.karfau.as3.persistence.domain.metatag.*;
-	import de.karfau.as3.persistence.domain.type.Blob;
-	import de.karfau.as3.persistence.domain.type.Collection;
 	import de.karfau.as3.persistence.domain.type.Entity;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 	import de.karfau.as3.persistence.domain.type.IType;
-	import de.karfau.as3.persistence.domain.type.Primitive;
-	import de.karfau.as3.persistence.domain.type.TypeUtil;
+	import de.karfau.as3.persistence.domain.type.property.ClassPropertiesAnalysis;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
 	import de.karfau.as3.persistence.domain.type.property.NumericIdentifier;
@@ -23,17 +20,15 @@ package de.karfau.as3.persistence.domain {
 	import org.spicefactory.lib.reflect.ClassInfo;
 	import org.spicefactory.lib.reflect.Metadata;
 	import org.spicefactory.lib.reflect.Property;
-	import org.spicefactory.lib.reflect.types.Private;
-
-	{
-		Metadata.registerMetadataClass(MetaTagEntity)
-		Metadata.registerMetadataClass(MetaTagId)
-		//Metadata.registerMetadataClass(MetaTagTransient)
-	}
 
 	public class EntityFactory {
 
-		public static const ID_PROPERTY_NAME:String = "id";
+		{
+			Metadata.registerMetadataClass(MetaTagEntity);
+			Metadata.registerMetadataClass(MetaTagId);
+			Metadata.registerMetadataClass(MetaTagArrayElementType);
+			Metadata.registerMetadataClass(MetaTagTransient)
+		}
 
 		private var _typeRegister:TypeRegister;
 
@@ -49,118 +44,73 @@ package de.karfau.as3.persistence.domain {
 			return new ArgumentError("Expected a persistable class but was '" + getQualifiedClassName(clazz) + "' " + append);
 		}
 
-		private function describeValueType(type:IType):String {
-			return "which is a " + (type.isPrimitive() ? "primitive " : "") + "value-class.";
-		}
+		/*private function describeValueType(type:IType):String {
+		 return "which is a " + (type.isPrimitive() ? "primitive " : "") + "value-class.";
+		 }*/
 
 		public function createEntity(clazz:Class):IEntity {
 
 			if (clazz == null)
-				throw expectedPersistableClassButWas(clazz);
+				throw expectedPersistableClassButWas(null);
 
 			var type:IType = _typeRegister.getTypeForClass(clazz);
 			var result:Entity;
 
-			if (type == null) {
-				const ci:ClassInfo = ClassInfo.forClass(clazz);
-				result = initializeEntity(ci);
-
-				result.persistenceName = detectPersistenceName(ci);
-
-			} else if (type is IEntity) {
+			if (type is IEntity) {
 				result = Entity(type);
-			} else if (type.isValue() || type.isPrimitive()) {
-				throw expectedPersistableClassButWas(clazz, describeValueType(type));
 			} else {
-				throw expectedPersistableClassButWas(clazz, ": typeRegister returned the unexpected IType-instance " + type);
-			}
-			return result;
-		}
+				const info:ClassPropertiesAnalysis = ClassPropertiesAnalysis.forClass(clazz);
 
-		private function initializeEntity(ci:ClassInfo):Entity {
+				validatePersistableEntity(info);
 
-			var properties:Vector.<Property> = Vector.<Property>(ci.getProperties().filter(filterPersistableProperties));
-			if (properties.length == 0) {
-				throw expectedPersistableClassButWas(ci.getClass(), "which has no property that is readable and writable and " + "not [Transient].");
-			}
+				var identifier:IIdentifier = createIdentifier(info.identifiers[0]);
 
-			var pk:IIdentifier = detectPrimaryKey(properties, ci);
-			if (pk == null)
-				throw expectedPersistableClassButWas(ci.getClass(), "which has no detectable primary key." +
-																														" Expecting a property with the name '" + ID_PROPERTY_NAME + "'" +
-																														" or with [Id].");
+				result = new Entity(info.getClass());
+				result.persistenceName = detectPersistenceName(info.classInfo);
 
-			var result:Entity = new Entity(ci.getClass());
-			typeRegister.registerType(result);
-			//create all the types:
-			var clazz:Class;
-			var property:Property;
-			for each(property in properties) {
-				clazz = property.type.getClass();
-				if (!typeRegister.hasTypeFor(clazz)) {
-					typeRegister.registerType(createType(property));
+				result.identifier = identifier
+				for each(var property:Property in info.persistableProperties) {
+					result.setProperty(createProperty(property));
 				}
-			}
 
-			//initialize Entity properties
-			result.identifier = pk;
-			for each(property in properties) {
-				result.setProperty(createProperty(property));
+				typeRegister.registerType(result);
 			}
 
 			return result;
-		}
-
-		private function createType(property:Property):IType {
-			const clazz:Class = property.type.getClass();//TODO:this could be Private!!!
-			if (TypeUtil.isPrimitiveType(clazz)) {
-				return new Primitive(clazz);
-			}
-			if (TypeUtil.isCollectionType(clazz)) {
-				var elementType:ClassInfo = TypeUtil.getCollectionElementType(clazz);
-				if (elementType == null || elementType.getClass() == Private) {
-					elementType = null;
-					//TODO:elementType from Metadata?
-				}
-				if (elementType != null) {
-					//trace("elementType: " + elementType.getClass());
-					return new Collection(clazz, elementType.getClass());
-				}
-			}
-			return new Blob(clazz);
 		}
 
 		protected function detectPersistenceName(ci:ClassInfo):String {
-			return ci.hasMetadata(MetaTagEntity) ? getMetaTagEntity(ci).name : ci.simpleName;
+			var meta:MetaTagEntity = MetaTagEntity.fromClassInfo(ci);
+			return meta ? meta.name : ci.simpleName;
 		}
 
-		protected function detectPrimaryKey(properties:Vector.<Property>, ci:ClassInfo):IIdentifier {
-			var property:Property;
-			/*if (ci.hasMetadata(MetaTagId)) {
-			 for each(property in properties) {
-			 if (property.hasMetadata(MetaTagId)) {
-			 return createIdentifier(property);
-			 }
-			 }
-			 throw new SyntaxError("'" + ci.name + "' uses [Id] on a property that is not persistable.");
-			 } else {*/
-			property = ci.getProperty(ID_PROPERTY_NAME);
-			if (property == null) {
-				throw new SyntaxError("'" + ci.name + "' has no property for a primary key.")
-			} else {
-				return createIdentifier(property);
+		protected function validatePersistableEntity(info:ClassPropertiesAnalysis):void {
+			if (!info.hasPersistableProperties()) {
+				throw expectedPersistableClassButWas(info.classInfo.getClass(), "which has no property that is readable and writable and not [Transient].");
 			}
-
+			if (!info.hasIdentifiers()) {
+				throw expectedPersistableClassButWas(info.getClass(), "which has no detectable primary key.");
+			}
+			if (info.identifiers.length > 1) {
+				var names:Array = [];
+				for each(var prop:Property in info.identifiers) {
+					names.push("'" + prop.name + "'" + prop.type.getClass())
+				}
+				throw new SyntaxError("Expected exactly 1 property as primary key, but in class " + info.getClass() +
+															" the properties\n\t" + names.join(" and ") + "\nwere detected as primary keys.");
+			}
 		}
 
-		private function createIdentifier(source:Property):IIdentifier {
-			const clazz:Class = source.type.getClass();
-			if (!TypeUtil.isNumericType(clazz))
+		protected function createIdentifier(source:Property):IIdentifier {
+
+			try {
+				var result:NumericIdentifier = new NumericIdentifier(source.type.getClass(), typeRegister);
+			} catch(error:ArgumentError) {
 				throw new SyntaxError("Expected a numeric property as primary key, but property '" + source.name + "' " +
 															"in class '" + source.owner.name + "' is of type <" + source.type.name + ">.");
-			var result:NumericIdentifier = new NumericIdentifier(clazz, typeRegister);
-			result.fromReflectionSource(source);
+			}
 
+			result.fromReflectionSource(source);
 			return result;
 		}
 
@@ -170,17 +120,5 @@ package de.karfau.as3.persistence.domain {
 			return result;
 		}
 
-		protected function getMetaTagEntity(classinfo:ClassInfo):MetaTagEntity {
-			return MetaTagEntity(classinfo.getMetadata(MetaTagEntity)[0]);
-		}
-
-		protected function getMetaTagId(classinfo:ClassInfo):MetaTagId {
-			return MetaTagId(classinfo.getMetadata(MetaTagId)[0]);
-		}
-
-		protected function filterPersistableProperties(item:Property, index:int, array:Array):Boolean {
-			var result:Boolean = item.readable && item.writable && !item.hasMetadata("Transient");
-			return result;
-		}
 	}
 }
