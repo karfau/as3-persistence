@@ -22,5 +22,7 @@ package de.karfau.as3.persistence.domain.type {
 		function getProperties(filter:Matcher = null):Vector.<EntityProperty>
 
 		function get identifier():IIdentifier;
+
+		function accept(visitor:IEntityVisitor):void;
 	}
 }

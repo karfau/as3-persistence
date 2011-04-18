@@ -20,5 +20,8 @@ package de.karfau.as3.persistence.domain.type.property {
 			super.fromReflectionSource(source);
 		}
 
+		override public function accept(visitor:IPropertyVisitor):void {
+			visitor.visitProperty(this);
+		}
 	}
 }

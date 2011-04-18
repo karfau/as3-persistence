@@ -20,6 +20,10 @@ package de.karfau.as3.persistence.domain.type.property {
 				throw new ArgumentError("Expected a numeric class, but was " + clazz + ".");
 		}
 
+		override public function accept(visitor:IPropertyVisitor):void {
+			visitor.visitIdentifier(this);
+		}
+
 		override public function fromReflectionSource(source:Property):void {
 			super.fromReflectionSource(source);
 		}

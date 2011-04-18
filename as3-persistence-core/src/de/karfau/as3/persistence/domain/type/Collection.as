@@ -21,7 +21,7 @@ package de.karfau.as3.persistence.domain.type {
 		}
 
 		override protected function describeInstance(...rest):Object {
-			return super.describeInstance(rest.concat({elementClass:elementClass}));
+			return super.describeInstance(rest, {elementClass:elementClass});
 		}
 	}
 }

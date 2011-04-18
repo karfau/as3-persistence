@@ -9,6 +9,9 @@ package de.karfau.as3.persistence.domain.type.property {
 	import de.karfau.as3.persistence.domain.TypeRegister;
 	import de.karfau.as3.persistence.domain.type.IType;
 
+	import flash.errors.IllegalOperationError;
+	import flash.utils.getQualifiedClassName;
+
 	import org.spicefactory.lib.reflect.Property;
 
 	public class AbstractProperty implements IProperty {
@@ -45,6 +48,10 @@ package de.karfau.as3.persistence.domain.type.property {
 		public function fromReflectionSource(source:Property):void {
 			_name = source.name;
 
+		}
+
+		public function accept(visitor:IPropertyVisitor):void {
+			throw new IllegalOperationError("AbstractProperty.accept(IPropertyVisitor) is abstract and needs implementation in " + getQualifiedClassName(this));
 		}
 	}
 }

@@ -24,5 +24,6 @@ package de.karfau.as3.persistence.domain.type {
 
 		function toString():String;
 
+		/*function clone():IType;*/
 	}
 }

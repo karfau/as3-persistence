@@ -68,7 +68,7 @@ package de.karfau.as3.persistence.domain.type {
 		}
 
 		override protected function describeInstance(...rest):Object {
-			return super.describeInstance(rest.concat({persistenceName: persistenceName}));
+			return super.describeInstance(rest, {persistenceName: persistenceName});
 		}
 
 		public function setProperty(property:EntityProperty):Boolean {
@@ -77,6 +77,10 @@ package de.karfau.as3.persistence.domain.type {
 			}
 			_properties[property.name] = property;
 			return true;
+		}
+
+		public function accept(visitor:IEntityVisitor):void {
+			visitor.visitEntity(this);
 		}
 	}
 }

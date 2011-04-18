@@ -6,7 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.type {
-
 	public class Primitive extends AbstractType {
 
 		public function Primitive(clazz:Class) {

@@ -70,7 +70,7 @@ package de.karfau.as3.persistence.domain {
 
 				result.identifier = identifier
 				for each(var property:Property in info.persistableProperties) {
-					result.setProperty(createProperty(property));
+					result.setProperty(createEntityProperty(property));
 				}
 
 				typeRegister.registerType(result);
@@ -114,7 +114,7 @@ package de.karfau.as3.persistence.domain {
 			return result;
 		}
 
-		protected function createProperty(source:Property):EntityProperty {
+		protected function createEntityProperty(source:Property):EntityProperty {
 			var result:EntityProperty = new EntityProperty(source.type.getClass(), typeRegister);
 			result.fromReflectionSource(source);
 			return result;

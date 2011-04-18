@@ -61,11 +61,20 @@ package de.karfau.as3.persistence.domain.type {
 
 		protected function describeInstance(...rest):Object {
 			var result:Object = {primitive:isPrimitive(),entity:!isValue()};
-			for each (var descr:Object in rest) {
-				for (var key:String in descr)
-					result[key] = descr[key];
-			}
+			flattenArray(rest, result);
 			return result;
 		}
+
+		private function flattenArray(array:Array, result:Object):void {
+			for each (var descr:Object in array) {
+				if (descr is Array && (descr as Array).length > 0) {
+					flattenArray((descr as Array), result);
+				} else {
+					for (var key:String in descr)
+						result[key] = descr[key];
+				}
+			}
+		}
+
 	}
 }

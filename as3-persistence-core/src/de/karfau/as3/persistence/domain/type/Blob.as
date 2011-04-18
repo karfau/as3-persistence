@@ -19,5 +19,6 @@ package de.karfau.as3.persistence.domain.type {
 		override public function isValue():Boolean {
 			return true;
 		}
+
 	}
 }
