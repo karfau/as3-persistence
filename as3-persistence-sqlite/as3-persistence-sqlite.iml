@@ -17,6 +17,15 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="as3-persistence-core" exported="" />
     <orderEntry type="library" exported="" scope="PROVIDED" name="Hamcrest-AS3-only v1.1.3" level="application" />
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../_git/karfau-as3-operations/libs/bin/as3-signals-utilities-async-v0.8.swc!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
