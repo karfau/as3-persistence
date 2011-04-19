@@ -6,8 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.type {
-	import mx.collections.ArrayCollection;
-
 	import org.flexunit.asserts.assertFalse;
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
@@ -55,7 +53,7 @@ package de.karfau.as3.persistence.domain.type {
 													Vector.<int>, Vector.<Number>, Vector.<uint>,//based on special type
 													Vector.<Boolean>,Vector.<String>,//special: is based on Vector.<*>
 													//Objects:
-													Array, ArrayCollection,//untyped
+													Array, /*ArrayCollection,*///untyped
 													Vector.<Object>,
 													Vector.<Vector.<String>>//cascading
 													/*
@@ -122,8 +120,7 @@ package de.karfau.as3.persistence.domain.type {
 
 		public static const UNSUPPORTED_RETURNING_NULL_FOR_getCollectionElementType:Array =
 												[
-
-													Array, ArrayCollection,	//no subtype
+													Array,/* ArrayCollection,*/	//no subtype
 													Vector, XML, XMLList, //not supported by isCollectionType :
 													Boolean, int, Number, uint, String,//primitives
 													Object,//complex

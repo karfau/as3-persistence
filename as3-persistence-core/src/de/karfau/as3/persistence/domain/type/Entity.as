@@ -15,7 +15,7 @@ package de.karfau.as3.persistence.domain.type {
 
 	public class Entity extends AbstractType implements IEntity {
 
-		private var _persistenceName:String;
+		protected var _persistenceName:String;
 		public function get persistenceName():String {
 			return _persistenceName;
 		}

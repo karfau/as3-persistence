@@ -43,7 +43,7 @@ package de.karfau.as3.persistence.domain {
 
 		[Test]
 		public function AnEntityCanBeVisitedAfterRegisteringIt():void {
-			var entity:IEntity = new EntityStub();
+			var entity:IEntity = new EntityStub("stub");
 			model.registerEntity(entity);
 			var visitor:EntityVisitorStub = new EntityVisitorStub();
 			model.visitAllEntities(visitor);
@@ -52,7 +52,7 @@ package de.karfau.as3.persistence.domain {
 
 		[Test]
 		public function ModelHasThePersistanceNameOfAnEntityAfterRegisteringIt():void {
-			var entity:IEntity = new EntityStub();
+			var entity:IEntity = new EntityStub("stub");
 			model.registerEntity(entity);
 
 			assertTrue("entity should have been visited", model.hasPersistanceName(entity.persistenceName));
@@ -60,7 +60,7 @@ package de.karfau.as3.persistence.domain {
 
 		[Test]
 		public function ModelHasClassOfAnEntityAfterRegisteringIt():void {
-			var entity:IEntity = new EntityStub();
+			var entity:IEntity = new EntityStub("stub");
 			model.registerEntity(entity);
 
 			assertTrue("entity should have been visited", model.isRegisteredEntityType(Object));
@@ -69,13 +69,14 @@ package de.karfau.as3.persistence.domain {
 		[Test]
 		public function RegisteringTheSamePersistanceNameTwiceFails():void {
 			//TODO: test vs. classes, modify stub
-			var first:IEntity = new EntityStub();
-			var second:IEntity = new EntityStub();
+			var first:IEntity = new EntityStub("stub");
+			var second:IEntity = new EntityStub("stub");
 			model.registerEntity(first);
 			const execute:Function = function():void {
 				model.registerEntity(second);
 			}
 
+			//mismatch-description could be very misleading, as it causes execution again
 			assertThat(execute,
 								throws(allOf(
 														isA(ArgumentError),
@@ -83,7 +84,26 @@ package de.karfau.as3.persistence.domain {
 																																 containsString(first.toString())))
 														)));
 		}
+
+		[Test]
+		public function RegisteringTheSameClassTwiceFails():void {
+			var first:IEntity = new EntityStub("stub1");
+			var second:IEntity = new EntityStub("stub2");
+			model.registerEntity(first);
+			const execute:Function = function():void {
+				model.registerEntity(second);
+			}
+
+			//mismatch-description could be very misleading, as it causes execution again
+			assertThat(execute,
+								throws(allOf(
+														isA(ArgumentError),
+														hasPropertyWithValue("message", allOf(containsString("class '" + first.clazz + "'"),
+																																 containsString(first.toString())))
+														)));
+		}
 	}
+
 }
 
 import de.karfau.as3.persistence.domain.type.Entity;
@@ -91,12 +111,9 @@ import de.karfau.as3.persistence.domain.type.IEntity;
 
 class EntityStub extends Entity implements IEntity {
 
-	function EntityStub() {
+	function EntityStub(persistanceName:String = "stub") {
 		super(Object);
-	}
-
-	override public function get persistenceName():String {
-		return "stub";
+		_persistenceName = persistanceName;
 	}
 
 }

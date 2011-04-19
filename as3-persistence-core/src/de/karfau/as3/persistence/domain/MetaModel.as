@@ -20,6 +20,9 @@ package de.karfau.as3.persistence.domain {
 			var name:String = entity.persistenceName;
 			if (hasPersistanceName(name))
 				throw new ArgumentError("An entity with the persistanceName '" + name + "' has already been set:" + persistanceNames[name]);
+			if (isRegisteredEntityType(entity.clazz))
+				throw new ArgumentError("An entity with the class '" + entity.clazz + "' has already been set:" + classes[entity.clazz]);
+
 			persistanceNames[name] = entity;
 			classes[entity.clazz] = entity;
 		}
