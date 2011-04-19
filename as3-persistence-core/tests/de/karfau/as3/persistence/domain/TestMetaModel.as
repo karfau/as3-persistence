@@ -30,15 +30,11 @@ package de.karfau.as3.persistence.domain {
 			assertNull("model is null", model);
 			model = new MetaModel();
 
-			//assertNull("factory is null", factory);
-			//factory = new EntityFactory();
-
 		}
 
 		[After]
 		public function teardown():void {
 			model = null;
-			//factory = null;
 		}
 
 		[Test]
