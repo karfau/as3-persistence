@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.metatag.relation {
+	import flash.errors.IllegalOperationError;
+
 	import org.spicefactory.lib.reflect.Property;
 
 	public class MetaTagRelationBase implements IMetaTagRelation {
@@ -47,7 +49,7 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 		}
 
 		public function isInverseSide():Boolean {
-			return mappedBy == null;
+			return mappedBy != null;
 		}
 
 		protected function get name():String {
@@ -55,11 +57,39 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 		}
 
 		public function toString(attachedTo:Object = null):String {
-			return "[" + name + (!isInverseSide() ? "mappedBy='" + mappedBy + "'" : "") + "]" + (attachedTo != null ? " @ " + attachedTo : "");
+			return "[" + name + (isInverseSide() ? "(mappedBy='" + mappedBy + "')" : "") + "]" + (attachedTo != null ? " @ " + attachedTo : "");
 		}
 
 		public function validateCardinality(reflectionSource:Property):void {
 			throw new Error("validateCardinality(reflectionSource:Property) needs to be implmented in " + this)
+		}
+
+		private var _InverseRelation:Class;
+
+		public function createOwningSide():IMetaTagRelation {
+			if (!isInverseSide()) {
+				throw new IllegalOperationError("Owning side can only be generated from an inverse side.")
+			}
+			return new _InverseRelation();
+		}
+
+		public function createInverseSide(mappedBy:String):IMetaTagRelation {
+			if (isInverseSide()) {
+				throw new IllegalOperationError("Inverse side can only be generated from owning side.")
+			}
+			var result:IMetaTagRelation = new _InverseRelation();
+			result["mappedBy"] = mappedBy;
+			return result;
+		}
+
+		public function MetaTagRelationBase(InverseRelation:Class) {
+			this._InverseRelation = InverseRelation;
+			if (InverseRelation == null)
+				throw new ArgumentError("InverseRelation has not been specified by " + this);
+		}
+
+		protected function get InverseRelation():Class {
+			return _InverseRelation;
 		}
 	}
 }

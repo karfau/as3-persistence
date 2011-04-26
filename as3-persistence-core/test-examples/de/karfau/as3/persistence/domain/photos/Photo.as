@@ -33,20 +33,20 @@ package de.karfau.as3.persistence.domain.photos {
 		 */
 		public var time_of_creation:Date;
 
-		[OneToOne]
+		//[OneToOne]
 		/**
 		 * "?-To-One"-Relation, unidirectional
 		 */
 		public var location:GeoLocation;
 
-		[ManyToOne(mappedBy="photos")]
-		[Required]
+		//[ManyToOne(mappedBy="photos")]
+		//[Required]
 		/**
 		 * "Many-To-One"-Relation, bidirectional
 		 */
 		public var device:Camera;
 
-		[ManyToMany]
+		//[ManyToMany]
 		/**
 		 * "Many-To-Many"-Relation, bidirectional
 		 */

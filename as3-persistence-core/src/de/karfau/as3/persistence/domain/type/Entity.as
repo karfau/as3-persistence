@@ -9,12 +9,14 @@ package de.karfau.as3.persistence.domain.type {
 	import de.karfau.as3.persistence.domain.model.EntityRelation;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
+	import de.karfau.as3.persistence.domain.type.property.IProperty;
 
 	import flash.utils.Dictionary;
 
 	public class Entity extends AbstractType implements IEntity {
 
 		protected var _persistenceName:String;
+
 		public function get persistenceName():String {
 			return _persistenceName;
 		}
@@ -65,7 +67,7 @@ package de.karfau.as3.persistence.domain.type {
 		private var _nonNavigabelRelations:Vector.<EntityRelation> = new Vector.<EntityRelation>();
 
 		public function attachNonNavigableRelation(entityRelation:EntityRelation):void {
-			_nonNavigabelRelations
+			_nonNavigabelRelations.push(entityRelation);
 		}
 
 		public function get nonNavigabelRelations():Vector.<EntityRelation> {
@@ -83,6 +85,27 @@ package de.karfau.as3.persistence.domain.type {
 			property.declaredBy = this;
 			_properties[property.name] = property;
 			return true;
+		}
+
+		public var superEntity:IEntity;
+
+		public function hasSuperEntity():Boolean {
+			return superEntity != null;
+		}
+
+		public function getPropertyFromDeclaringEntity(name:String):IProperty {
+			if (hasSuperEntity()) {
+				if (superEntity.hasPropertyWithName(name))
+					return superEntity.getPropertyFromDeclaringEntity(name);
+			}
+			return getProperty(name);
+		}
+
+		public function isPropertyInheritedFromSuperEntity(name:String):Boolean {
+			if (!hasPropertyWithName(name)) {
+				throw new Error(this + " has no property with name " + name + ".")
+			}
+			return hasSuperEntity() && superEntity.hasPropertyWithName(name);
 		}
 
 		public function accept(visitor:IEntityVisitor):void {

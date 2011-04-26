@@ -14,6 +14,7 @@ package de.karfau.as3.persistence.domain.type.property {
 	import flash.errors.IllegalOperationError;
 	import flash.utils.getQualifiedClassName;
 
+	import org.spicefactory.lib.reflect.ClassInfo;
 	import org.spicefactory.lib.reflect.Property;
 
 	public class AbstractProperty implements IProperty {
@@ -53,10 +54,14 @@ package de.karfau.as3.persistence.domain.type.property {
 			return rawClass != persistentClass;
 		}
 
-		protected var _relationTag:MetaTagRelationBase;
+		private var _relationTag:MetaTagRelationBase;
 
 		public function get relationTag():IMetaTagRelation {
 			return _relationTag;
+		}
+
+		public function set relationTag(value:IMetaTagRelation):void {
+			_relationTag = MetaTagRelationBase(value);
 		}
 
 		private var _relation:EntityRelation;
@@ -84,6 +89,31 @@ package de.karfau.as3.persistence.domain.type.property {
 
 		public function accept(visitor:IPropertyVisitor):void {
 			throw new IllegalOperationError("AbstractProperty.accept(IPropertyVisitor) is abstract and needs implementation in " + getQualifiedClassName(this));
+		}
+
+		public function isOwningRelation():Boolean {
+			return relation && relation.owningProperty == this;
+		}
+
+		public function getRelatedEntity():IEntity {
+			var result:IEntity;
+			if (relation) {
+				result = isOwningRelation() ? relation.inverseEntity : relation.owningProperty.declaredBy;
+			}
+			return result;
+		}
+
+		public function getRelatedProperty():IProperty {
+			var result:IProperty;
+			if (relation) {
+				result = isOwningRelation() ? relation.inverseProperty : relation.owningProperty;
+			}
+			return result;
+		}
+
+		public function toString():String {
+			return "[Property " + name + " declared by " + declaredBy.getQualifiedName() + ": persistentClass=" +
+						 ClassInfo.forClass(persistentClass).simpleName + (isCollection() ? "(collection)" : "") + "]";
 		}
 
 	}

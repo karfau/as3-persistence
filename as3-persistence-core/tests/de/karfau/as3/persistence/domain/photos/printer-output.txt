@@ -1,0 +1,50 @@
+﻿ENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Motif>: persistenceName=Motif]
+	Property: PK:int 
+	Property: occurences:Photo(collection) 
+		RELATION: [ManyToMany] <-> [ManyToMany(mappedBy='occurences')] @ Photo.motifes:Motif(collection)
+ENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Sight>: persistenceName=Sight]
+	SUPERENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Motif>: persistenceName=Motif]
+	Property: place:String 
+	Property: PK:int  {{ declared by [class Motif] }}
+	Property: occurences:Photo(collection)  {{ declared by [class Motif] }}
+	Property: name:String 
+ENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Person>: persistenceName=Person]
+	SUPERENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Motif>: persistenceName=Motif]
+	Property: allow_markers:Boolean 
+	Property: firstname:String 
+	Property: PK:int  {{ declared by [class Motif] }}
+	Property: occurences:Photo(collection)  {{ declared by [class Motif] }}
+	Property: lastname:String 
+ENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Photographer>: persistenceName=Photographer]
+	SUPERENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Person>: persistenceName=Person]
+	Property: cameras:Camera(collection) 
+		RELATION: [OneToMany] -> [Entity for type <de.karfau.as3.persistence.domain.photos::Camera>: persistenceName=cam]
+	Property: allow_markers:Boolean  {{ declared by [class Person] }}
+	Property: firstname:String  {{ declared by [class Person] }}
+	Property: PK:int  {{ declared by [class Motif] }}
+	Property: occurences:Photo(collection)  {{ declared by [class Motif] }}
+	Property: lastname:String  {{ declared by [class Person] }}
+ENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Camera>: persistenceName=cam]
+	NonNavigableRELATION: [class Camera] <- [OneToMany] @ Photographer.cameras:Camera(collection)
+	Property: pk:int 
+	Property: model:String 
+	Property: serialno:String 
+	Property: photos:Photo(collection) 
+		RELATION: [OneToMany(mappedBy='device')] <-> [ManyToOne] @ Photo.device:Camera
+ENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::Photo>: persistenceName=Photo]
+	Property: device:Camera 
+		RELATION: [ManyToOne] <-> [OneToMany(mappedBy='device')] @ Camera.photos:Photo(collection)
+	Property: id:int 
+	Property: title:String 
+	Property: motifes:Motif(collection) 
+		RELATION: [ManyToMany(mappedBy='occurences')] <-> [ManyToMany] @ Motif.occurences:Photo(collection)
+	Property: location:GeoLocation 
+		RELATION: [OneToOne] -> [Entity for type <de.karfau.as3.persistence.domain.photos::GeoLocation>: persistenceName=GeoLocation]
+	Property: time_of_creation:Date 
+	Property: histogram:int(collection) 
+ENTITY: [Entity for type <de.karfau.as3.persistence.domain.photos::GeoLocation>: persistenceName=GeoLocation]
+	NonNavigableRELATION: [class GeoLocation] <- [OneToOne] @ Photo.location:GeoLocation
+	Property: id:Number 
+	Property: height:Number 
+	Property: position:Point 
+	Property: region:String 

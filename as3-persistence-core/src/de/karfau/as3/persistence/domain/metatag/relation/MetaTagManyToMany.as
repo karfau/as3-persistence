@@ -24,5 +24,20 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 				throw new SyntaxError("Expected a collection-type but found " + toString(reflectionSource) + " with type " + reflectionSource.type.getClass())
 			}
 		}
+
+		override public function createOwningSide():IMetaTagRelation {
+			return new MetaTagManyToMany();
+		}
+
+		override public function createInverseSide(mappedBy:String):IMetaTagRelation {
+			var result:MetaTagManyToMany = new MetaTagManyToMany();
+			if (mappedBy)
+				result.mappedBy = mappedBy;
+			return result;
+		}
+
+		public function MetaTagManyToMany() {
+			super(MetaTagManyToMany);
+		}
 	}
 }

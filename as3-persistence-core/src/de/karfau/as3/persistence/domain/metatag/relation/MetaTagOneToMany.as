@@ -24,5 +24,9 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 				throw new SyntaxError("Expected a collection-type but found " + toString(reflectionSource) + " with type " + reflectionSource.type.getClass())
 			}
 		}
+
+		public function MetaTagOneToMany() {
+			super(MetaTagManyToOne);
+		}
 	}
 }

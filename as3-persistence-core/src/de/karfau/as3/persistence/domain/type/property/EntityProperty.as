@@ -18,7 +18,7 @@ package de.karfau.as3.persistence.domain.type.property {
 
 		override public function fromReflectionSource(source:Property):void {
 			super.fromReflectionSource(source);
-			_relationTag = MetaTagRelationBase.fromProperty(source);
+			relationTag = MetaTagRelationBase.fromProperty(source);
 		}
 
 		override public function accept(visitor:IPropertyVisitor):void {

@@ -25,7 +25,7 @@ package de.karfau.as3.persistence.domain.type {
 			return _clazz;
 		}
 
-		public function getSimpeName():String {
+		public function getSimpleName():String {
 			return getClassInfo().simpleName;
 		}
 

@@ -7,87 +7,126 @@
  */
 package de.karfau.as3.persistence.domain.model.analysis {
 	import de.karfau.as3.persistence.domain.MetaModel;
+	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToMany;
+	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToOne;
+	import de.karfau.as3.persistence.domain.model.BaseModelIterator;
 	import de.karfau.as3.persistence.domain.model.EntityRelation;
 	import de.karfau.as3.persistence.domain.type.Entity;
 	import de.karfau.as3.persistence.domain.type.IEntity;
-	import de.karfau.as3.persistence.domain.type.IEntityVisitor;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
 	import de.karfau.as3.persistence.domain.type.property.IProperty;
-	import de.karfau.as3.persistence.domain.type.property.IPropertyVisitor;
 
 	import org.spicefactory.lib.reflect.ClassInfo;
 	import org.spicefactory.lib.reflect.Property;
 
-	public class ModelRelationsAnalysis implements IEntityVisitor,IPropertyVisitor {
-
-		private var model:MetaModel;
+	public class ModelRelationsAnalysis extends BaseModelIterator {
 
 		private var entityTypes:Vector.<Class>;
 
 		public function ModelRelationsAnalysis(model:MetaModel) {
-			this.model = model;
+			new ModelInheritanceAnalysis(model);
 			this.entityTypes = model.getRegisteredEntityTypes();
+			super(model);
 		}
 
-		public function visitEntity(entity:IEntity):void {
-			currentEntity = entity;
-			//TODO: look for entities that are subclasses: create isA-Relation
-			for each(var property:EntityProperty in entity.getAllProperties()) {
-				property.accept(this);
-			}
-		}
+		override public function visitProperty(property:IProperty):void {
 
-		private var currentEntity:IEntity;
-
-		public function visitProperty(property:IProperty):void {
-			//No RelationTag: only possible for unidirectional or inverseSide of bidirectional
+			//No RelationTag: only possible for unidirectional or if bidirectional is declared by inverse side
 			//RelationTag.isInverseSide(): dont detect, we are only detecting from owning side
-			if ((property.relationTag == null || !property.relationTag.isInverseSide()) && model.isRegisteredEntityType(property.persistentClass)) {
+			if (model.isRegisteredEntityType(property.persistentClass) &&
+					!currentEntity.isPropertyInheritedFromSuperEntity(property.name) &&
+					(property.relationTag == null || !property.relationTag.isInverseSide())) {
 
 				var inverseEntity:IEntity = model.getRegisteredEntityType(property.persistentClass);
 				var inverseProperties:Vector.<EntityProperty> = inverseEntity.getPropertiesByPersistentClass(currentEntity.clazz);
 				var mapped:EntityProperty;
 
 				var relation:EntityRelation = new EntityRelation(EntityProperty(property));
-				var relationComplete:Boolean = false;
 
-				switch (inverseProperties.length) {
-					//unidirectional
-					case 0:
-						relation.setOwnedEntity(Entity(inverseEntity));
-						break;
+				if (inverseProperties.length == 0) {//unidirectional relation
+					if (property.relationTag == null) {
+						//default relation if nothing is specified
+						EntityProperty(property).relationTag = property.isCollection() ? new MetaTagOneToMany() : new MetaTagOneToOne();
+					}
+					relation.setOwnedEntity(Entity(inverseEntity));
+				} else {//bidirectional mapping
+					/*there is a special/common case with only ONE inverseProperty:*/
+					if (inverseProperties.length == 1) {
+						if (!isSuitableInverseMapping(property, inverseProperties[0])) {
+							var errorMsg:String = "The only relation-mapping found for " + (property.relationTag ? property.relationTag.toString(property) : property) +
+																		" was " + inverseProperties[0].relationTag.toString(inverseProperties[0]) + ".\n";
 
-					//bidirectional
-					case 1:
-						mapped = inverseProperties[0];
-						break;
-					default://multiple relations, detect related property:
-						for each(var iprop:EntityProperty in inverseProperties) {
-							if (iprop.relationTag.isInverseSide() && iprop.relationTag.mappedBy == property.name) {
+							/* Only one exists and this one is not suitable means:
+							 property   | mapping					 | solution
+							 -----------|------------------|--------------
+							 nothing    | [owning]				 | ignore/dont create Relation: has been detected or will bedetected
+							 [owning]   | [owning]				 | could be two unidirectional mappings? Not implmented yet.
+							 nothing    | nothing    			 | Error: for Bidirectional relations 1 MetaTag is required
+							 nothing or |                  |
+							 [owning]   | [wrong mappedBy] | Error: Syntax, wrong attributename?
+							 */
+							if (property.relationTag == null && isOwningMapping(inverseProperties[0])) {
+								return;
+							}
+							if (isOwningMapping(property) && isOwningMapping(inverseProperties[0])) {
+								//relation.setOwnedEntity(Entity(inverseEntity));
+								throw new Error(errorMsg + "This could be two independent unidirectional mappings, but this seems strange, " +
+																"so it is not implemented yet.");
+							}
+							if (property.relationTag == null && inverseProperties[0].relationTag == null) {
+								throw new SyntaxError(errorMsg + "Bidirectional relation requires at least one Metatag (found none).");
+							}
+							if (inverseProperties[0].relationTag && !currentEntity.hasPropertyWithName(inverseProperties[0].relationTag.mappedBy)) {
+								throw new SyntaxError(errorMsg + "But" + currentEntity + " has no property with the name " + inverseProperties[0].relationTag.mappedBy + ".");
+							}
+
+						}
+					}
+					for each(var iprop:EntityProperty in inverseProperties) {
+						if (isSuitableInverseMapping(property, iprop)) {
+							if (mapped != null) {
+								throw new SyntaxError("When analysing " + inverseEntity + " for the relation from " + property.relationTag.toString(property) +
+																			" there where at least 2 properties that would fit:\n" +
+																			"\t" + mapped.relationTag.toString(mapped) + "\n" +
+																			"\t" + iprop.relationTag.toString(iprop) + "\n" +
+																			"And it was ambiguous which one to use.");
+							} else {
 								mapped = iprop;
-								break;
 							}
 						}
-				}
-				if (mapped != null) {
-					if (property.relationTag == null && mapped.relationTag == null) {
-						throw new SyntaxError("Biderectional relations need to declare at least the owning or the inverse side, " +
-																	"but found related properties without declaration:\n" +
-																	property + "vs.\n" + mapped);
+					}
+					if (mapped == null) {
+						throw new SyntaxError("Detected a possible biderectional relation when analysing " + property +
+																	" but none of the detected inverse properties was suitable:\n" +
+																	"\t" + inverseProperties.join("\n\t"));
 					} else {
+						if (property.relationTag == null) {
+							EntityProperty(property).relationTag = mapped.relationTag.createOwningSide();
+						} else if (mapped.relationTag == null) {
+							EntityProperty(mapped).relationTag = property.relationTag.createInverseSide(property.name);
+						}
 						relation.setInverseNavigable(mapped);
 					}
 				}
 			}
 		}
 
-		private function getReflectionProperty(from:EntityProperty):Property {
+		protected function isOwningMapping(property:IProperty):Boolean {
+			return property.relationTag && !property.relationTag.isInverseSide();
+		}
+
+		private function isSuitableInverseMapping(owning:IProperty, candidate:IProperty):Boolean {
+			return (owning.relationTag && !owning.relationTag.isInverseSide() && candidate.relationTag == null) ||
+						 (owning.relationTag == null && candidate.relationTag.isInverseSide() && candidate.relationTag.mappedBy == owning.name)
+		}
+
+		private function getReflectionProperty(from:IProperty):Property {
 			return ClassInfo.forClass(from.declaredBy.clazz).getProperty(from.name);
 		}
 
-		public function visitIdentifier(property:IIdentifier):void {
-
+		override public function visitIdentifier(property:IIdentifier):void {
+			//currently not relevant for relations
 		}
 	}
 }

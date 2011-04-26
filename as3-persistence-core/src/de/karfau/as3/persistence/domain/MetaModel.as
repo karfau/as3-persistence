@@ -56,7 +56,6 @@ package de.karfau.as3.persistence.domain {
 
 		public function detectRelations():void {
 			var relationsAnalysis:ModelRelationsAnalysis = new ModelRelationsAnalysis(this);
-			visitAllEntities(relationsAnalysis);
 		}
 	}
 }

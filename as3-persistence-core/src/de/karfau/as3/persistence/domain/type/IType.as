@@ -14,7 +14,7 @@ package de.karfau.as3.persistence.domain.type {
 
 		function get clazz():Class;
 
-		function getSimpeName():String;
+		function getSimpleName():String;
 
 		function getQualifiedName():String;
 

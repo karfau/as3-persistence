@@ -13,36 +13,52 @@ package de.karfau.as3.persistence.domain.model {
 
 	public class EntityRelation {
 
-		private var owning:EntityProperty;
+		private var _owningProperty:EntityProperty;
+		public function get owningProperty():EntityProperty {
+			return _owningProperty;
+		}
 
-		private var inverseEntity:Entity;
-		private var inverseProperty:EntityProperty;
+		private var _inverseEntity:Entity;
+
+		public function get inverseEntity():Entity {
+			return _inverseEntity;
+		}
+
+		private var _inverseProperty:EntityProperty;
+
+		public function get inverseProperty():EntityProperty {
+			return _inverseProperty;
+		}
 
 		public function EntityRelation(property:EntityProperty) {
-			owning = property;
+			_owningProperty = property;
 		}
 
 		public function setOwnedEntity(inverseEntity:Entity):void {
 			applyInverse(inverseEntity);
-			owning.relation = this;
+			_owningProperty.relation = this;
 			inverseEntity.attachNonNavigableRelation(this);
 		}
 
 		protected function applyInverse(entity:Entity, property:EntityProperty = null):void {
-			if (this.inverseEntity != null) {
+			if (this._inverseEntity != null) {
 				throw new IllegalOperationError("inverseSide can not be set twice, but has already been set to " +
-																				(inverseProperty == null ? entity : inverseProperty ));
+																				(_inverseProperty == null ? entity : _inverseProperty ));
 			}
-			this.inverseEntity = entity;
+			this._inverseEntity = entity;
 			if (property != null) {
-				inverseProperty = property;
+				_inverseProperty = property;
 			}
 		}
 
 		public function setInverseNavigable(inverseProperty:EntityProperty):void {
 			applyInverse(Entity(inverseProperty.declaredBy), inverseProperty);
-			owning.relation = this;
+			_owningProperty.relation = this;
 			inverseProperty.relation = this;
+		}
+
+		public function isBidirectional():Boolean {
+			return _inverseProperty != null;
 		}
 	}
 }

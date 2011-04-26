@@ -21,7 +21,8 @@ package de.karfau.as3.persistence.domain.photos {
 
 		public var serialno:String;
 
-		[HasMany(mappedBy="camera")]
+		[OneToMany(mappedBy="device")]
+		//TODO: throw for wrong name
 		[ArrayElementType("de.karfau.as3.persistence.domain.photos.Photo")]
 		public var photos:Array;
 

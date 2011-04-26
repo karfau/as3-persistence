@@ -28,7 +28,7 @@ package de.karfau.as3.persistence.domain.type {
 			if (isPrimitiveType(clazz))
 				return false;
 			var ci:ClassInfo;
-			trace(clazz);
+			//trace(clazz);
 			if (clazz != null) {//includes undefined: Class(undefined) -> null
 				//try{
 				ci = ClassInfo.forClass(clazz);

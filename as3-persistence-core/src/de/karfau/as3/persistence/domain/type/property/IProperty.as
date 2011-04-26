@@ -7,6 +7,7 @@
  */
 package de.karfau.as3.persistence.domain.type.property {
 	import de.karfau.as3.persistence.domain.metatag.relation.IMetaTagRelation;
+	import de.karfau.as3.persistence.domain.model.EntityRelation;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 
 	public interface IProperty {
@@ -23,5 +24,15 @@ package de.karfau.as3.persistence.domain.type.property {
 		function accept(visitor:IPropertyVisitor):void;
 
 		function get relationTag():IMetaTagRelation;
+
+		function get relation():EntityRelation;
+
+		function isOwningRelation():Boolean;
+
+		function getRelatedEntity():IEntity;
+
+		function getRelatedProperty():IProperty;
+
+		function toString():String;
 	}
 }

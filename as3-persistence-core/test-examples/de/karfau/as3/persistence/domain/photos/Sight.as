@@ -10,10 +10,10 @@ package de.karfau.as3.persistence.domain.photos {
 	public class Sight extends Motif {
 
 		public var name:String;
-		public var standort:String;
+		public var place:String;
 
 		override public function getLabel():String {
-			return name + " in " + standort;
+			return name + " in " + place;
 		}
 
 	}

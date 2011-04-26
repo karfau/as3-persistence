@@ -8,6 +8,7 @@
 package de.karfau.as3.persistence.domain.photos {
 	import flash.errors.IllegalOperationError;
 
+	[Inheritance]
 	public class Motif {
 
 		[Id]
@@ -17,7 +18,8 @@ package de.karfau.as3.persistence.domain.photos {
 			throw new IllegalOperationError("method has to be implemented by subclasses")
 		}
 
-		public var occurences:Array;
+		[ManyToMany]
+		public var occurences:Vector.<Photo>;
 
 	}
 }

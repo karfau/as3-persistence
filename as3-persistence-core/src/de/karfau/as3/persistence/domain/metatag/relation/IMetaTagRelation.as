@@ -12,6 +12,10 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 
 		function isInverseSide():Boolean;
 
+		function createOwningSide():IMetaTagRelation;
+
 		function toString(attachedTo:Object = null):String;
+
+		function createInverseSide(mappedBy:String):IMetaTagRelation;
 	}
 }
