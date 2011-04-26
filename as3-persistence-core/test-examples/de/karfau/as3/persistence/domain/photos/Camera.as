@@ -8,24 +8,22 @@
 package de.karfau.as3.persistence.domain.photos {
 	import de.karfau.as3.persistence.domain.meta;
 
+	[Entity("cam")]
 	public class Camera {
 
-		meta static const SIMPLE_NAME:String = "Camera";
+		meta static const ENTITY_NAME:String = "cam";
+		meta static const IDENTIFIER_NAME:String = "pk";
+
+		[Id]
+		public var pk:int;
 
 		public var model:String;
 
-		public var seriennummer:String;
+		public var serialno:String;
 
-		public var photos:Vector.<Photo>;
+		[HasMany(mappedBy="camera")]
+		[ArrayElementType("de.karfau.as3.persistence.domain.photos.Photo")]
+		public var photos:Array;
 
-		private var _id:int;
-
-		public function get id():int {
-			return _id;
-		}
-
-		public function set id(value:int):void {
-			_id = value;
-		}
 	}
 }

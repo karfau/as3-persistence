@@ -9,17 +9,17 @@ package de.karfau.as3.persistence.domain.type {
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
 
-	import org.hamcrest.Matcher;
-
 	public interface IEntity extends IType {
 
 		function get persistenceName():String;
 
 		function hasPropertyWithName(name:String):Boolean;
 
-		function getProperty(name:String):EntityProperty
+		function getProperty(name:String):EntityProperty;
 
-		function getProperties(filter:Matcher = null):Vector.<EntityProperty>
+		function getAllProperties(filter:Function = null):Vector.<EntityProperty>;
+
+		function getPropertiesByPersistentClass(persistentClass:Class):Vector.<EntityProperty>;
 
 		function get identifier():IIdentifier;
 

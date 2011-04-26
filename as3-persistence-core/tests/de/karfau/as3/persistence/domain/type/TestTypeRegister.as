@@ -39,7 +39,7 @@ package de.karfau.as3.persistence.domain.type {
 		[Test]
 		public function registeringANewTypeInstanceForAnExistingClassOverridesTheOldOne():void {
 			var entity1:IType = new Entity(Photo);
-			var entity2:IType = new Primitive(Photo);
+			var entity2:IType = new Entity(Photo);
 			typeRegister.registerType(entity1);
 			assertThat("should match first instance", typeRegister.getTypeForClass(Photo), strictlyEqualTo(entity1));
 			typeRegister.registerType(entity2);

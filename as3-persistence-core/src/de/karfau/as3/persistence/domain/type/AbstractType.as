@@ -6,9 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.type {
-	import flash.errors.IllegalOperationError;
-	import flash.utils.getQualifiedClassName;
-
 	import org.spicefactory.lib.reflect.ClassInfo;
 	import org.spicefactory.lib.util.ClassUtil;
 
@@ -36,16 +33,8 @@ package de.karfau.as3.persistence.domain.type {
 			return getClassInfo().name;
 		}
 
-		public function isPrimitive():Boolean {
-			throw new IllegalOperationError("AbstractType.isPrimitive() is abstract and needs implementation in " + getQualifiedClassName(this));
-		}
-
 		public function isNumeric():Boolean {
-			return isPrimitive() && TypeUtil.isNumericType(_clazz);
-		}
-
-		public function isValue():Boolean {
-			throw new IllegalOperationError("AbstractType.isValue() is abstract and needs implementation in " + getQualifiedClassName(this));
+			return TypeUtil.isNumericType(_clazz);
 		}
 
 		public function toString():String {
@@ -60,7 +49,7 @@ package de.karfau.as3.persistence.domain.type {
 		}
 
 		protected function describeInstance(...rest):Object {
-			var result:Object = {primitive:isPrimitive(),entity:!isValue()};
+			var result:Object = {/*primitive:isPrimitive(),entity:!isValue()*/};
 			flattenArray(rest, result);
 			return result;
 		}

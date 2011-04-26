@@ -6,6 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain {
+	import de.karfau.as3.persistence.domain.model.analysis.ModelRelationsAnalysis;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 	import de.karfau.as3.persistence.domain.type.IEntityVisitor;
 
@@ -35,11 +36,27 @@ package de.karfau.as3.persistence.domain {
 			return classes[clazz] is IEntity;
 		}
 
+		public function getRegisteredEntityType(clazz:Class):IEntity {
+			return classes[clazz] as IEntity;
+		}
+
+		public function getRegisteredEntityTypes():Vector.<Class> {
+			const result:Vector.<Class> = new Vector.<Class>();
+			for (var type:* in classes) {
+				result.push(type as Class)
+			}
+			return result
+		}
+
 		public function visitAllEntities(visitor:IEntityVisitor):void {
 			for each(var entity:IEntity in persistanceNames) {
 				visitor.visitEntity(entity);
 			}
 		}
 
+		public function detectRelations():void {
+			var relationsAnalysis:ModelRelationsAnalysis = new ModelRelationsAnalysis(this);
+			visitAllEntities(relationsAnalysis);
+		}
 	}
 }

@@ -64,7 +64,6 @@ package de.karfau.as3.persistence.domain {
 
 		[Test]
 		public function RegisteringTheSamePersistanceNameTwiceFails():void {
-			//TODO: test vs. classes, modify stub
 			var first:IEntity = new EntityStub("stub");
 			var second:IEntity = new EntityStub("stub");
 			model.registerEntity(first);
@@ -72,7 +71,7 @@ package de.karfau.as3.persistence.domain {
 				model.registerEntity(second);
 			}
 
-			//mismatch-description could be very misleading, as it causes execution again
+			//mismatch-description could be very misleading, as building it causes another execution
 			assertThat(execute,
 								throws(allOf(
 														isA(ArgumentError),
@@ -90,7 +89,7 @@ package de.karfau.as3.persistence.domain {
 				model.registerEntity(second);
 			}
 
-			//mismatch-description could be very misleading, as it causes execution again
+			//mismatch-description could be very misleading, as building it causes another execution
 			assertThat(execute,
 								throws(allOf(
 														isA(ArgumentError),

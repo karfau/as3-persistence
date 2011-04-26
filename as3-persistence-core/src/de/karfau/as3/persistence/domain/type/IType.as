@@ -18,10 +18,6 @@ package de.karfau.as3.persistence.domain.type {
 
 		function getQualifiedName():String;
 
-		function isPrimitive():Boolean;
-
-		function isValue():Boolean;
-
 		function toString():String;
 
 		/*function clone():IType;*/

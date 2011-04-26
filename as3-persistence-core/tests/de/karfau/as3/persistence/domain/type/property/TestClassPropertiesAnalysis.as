@@ -53,8 +53,6 @@ package de.karfau.as3.persistence.domain.type.property {
 												 )));
 		}
 
-		//TODO: identifiers are readble and writable
-
 		[Test]
 		public function identifierMeta():void {
 			var testling:ClassPropertiesAnalysis = ClassPropertiesAnalysis.forClass(IdentifierMetaPropertiesExample);

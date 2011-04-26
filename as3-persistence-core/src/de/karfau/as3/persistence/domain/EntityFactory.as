@@ -7,9 +7,14 @@
  */
 package de.karfau.as3.persistence.domain {
 	import de.karfau.as3.persistence.domain.metatag.*;
+	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagManyToMany;
+	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagManyToOne;
+	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToMany;
+	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToOne;
 	import de.karfau.as3.persistence.domain.type.Entity;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 	import de.karfau.as3.persistence.domain.type.IType;
+	import de.karfau.as3.persistence.domain.type.TypeUtil;
 	import de.karfau.as3.persistence.domain.type.property.ClassPropertiesAnalysis;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
@@ -20,6 +25,7 @@ package de.karfau.as3.persistence.domain {
 	import org.spicefactory.lib.reflect.ClassInfo;
 	import org.spicefactory.lib.reflect.Metadata;
 	import org.spicefactory.lib.reflect.Property;
+	import org.spicefactory.lib.reflect.types.Private;
 
 	public class EntityFactory {
 
@@ -28,6 +34,11 @@ package de.karfau.as3.persistence.domain {
 			Metadata.registerMetadataClass(MetaTagId);
 			Metadata.registerMetadataClass(MetaTagArrayElementType);
 			Metadata.registerMetadataClass(MetaTagTransient)
+			//Relations:
+			Metadata.registerMetadataClass(MetaTagOneToOne);
+			Metadata.registerMetadataClass(MetaTagOneToMany);
+			Metadata.registerMetadataClass(MetaTagManyToOne);
+			Metadata.registerMetadataClass(MetaTagManyToMany);
 		}
 
 		private var _typeRegister:TypeRegister;
@@ -43,10 +54,6 @@ package de.karfau.as3.persistence.domain {
 		private function expectedPersistableClassButWas(clazz:Class, append:String = null):ArgumentError {
 			return new ArgumentError("Expected a persistable class but was '" + getQualifiedClassName(clazz) + "' " + append);
 		}
-
-		/*private function describeValueType(type:IType):String {
-		 return "which is a " + (type.isPrimitive() ? "primitive " : "") + "value-class.";
-		 }*/
 
 		public function createEntity(clazz:Class):IEntity {
 
@@ -70,7 +77,8 @@ package de.karfau.as3.persistence.domain {
 
 				result.identifier = identifier
 				for each(var property:Property in info.persistableProperties) {
-					result.setProperty(createEntityProperty(property));
+					if (property.name != identifier.name)
+						result.setProperty(createEntityProperty(property));
 				}
 
 				typeRegister.registerType(result);
@@ -104,7 +112,7 @@ package de.karfau.as3.persistence.domain {
 		protected function createIdentifier(source:Property):IIdentifier {
 
 			try {
-				var result:NumericIdentifier = new NumericIdentifier(source.type.getClass(), typeRegister);
+				var result:NumericIdentifier = new NumericIdentifier(source.type.getClass());
 			} catch(error:ArgumentError) {
 				throw new SyntaxError("Expected a numeric property as primary key, but property '" + source.name + "' " +
 															"in class '" + source.owner.name + "' is of type <" + source.type.name + ">.");
@@ -115,7 +123,20 @@ package de.karfau.as3.persistence.domain {
 		}
 
 		protected function createEntityProperty(source:Property):EntityProperty {
-			var result:EntityProperty = new EntityProperty(source.type.getClass(), typeRegister);
+			var rawClass:Class = source.type.getClass();
+			var persistentClass:Class;
+			if (TypeUtil.isCollectionType(rawClass)) {
+				persistentClass = TypeUtil.getCollectionElementType(rawClass);
+				if (persistentClass == null) {
+					var meta:MetaTagArrayElementType = MetaTagArrayElementType.fromProperty(source);
+					if (meta)
+						persistentClass = meta.type.getClass();
+				} else if (persistentClass == Private) {
+					persistentClass = null;
+					//  throw new IllegalOperationError("Persistence of private classes is not supported.");
+				}
+			}
+			var result:EntityProperty = new EntityProperty(rawClass, persistentClass);
 			result.fromReflectionSource(source);
 			return result;
 		}

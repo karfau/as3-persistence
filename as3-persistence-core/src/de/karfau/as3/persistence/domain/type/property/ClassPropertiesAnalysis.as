@@ -56,7 +56,7 @@ package de.karfau.as3.persistence.domain.type.property {
 				addProperty(property);
 			}
 			finalizeIdentifiers();
-			//to prevent access to classInfo inside filter-calls this is not available before:
+			//to prevent access to classInfo inside filter-calls this is not available before filters are done:
 			_classInfo = classInfo;
 		}
 

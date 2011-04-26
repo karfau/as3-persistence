@@ -39,12 +39,12 @@ package de.karfau.as3.persistence.domain.type {
 
 		private static const REGEXPR_VECTOR_ELEMENT_TYPE:RegExp = /Vector.<([^\s]+)>$/;
 
-		public static function getCollectionElementType(clazz:Class):ClassInfo {
-			var result:ClassInfo;
+		public static function getCollectionElementType(clazz:Class):Class {
+			var result:Class;
 			if (isCollectionType(clazz)) {
 				var qfn:String = getQualifiedClassName(clazz);
 				if (REGEXPR_VECTOR_ELEMENT_TYPE.test(qfn)) {
-					result = ClassInfo.forName(qfn.match(REGEXPR_VECTOR_ELEMENT_TYPE).pop());
+					result = ClassInfo.forName(qfn.match(REGEXPR_VECTOR_ELEMENT_TYPE).pop()).getClass();
 				}
 			}
 			return result;

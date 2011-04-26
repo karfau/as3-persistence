@@ -22,7 +22,7 @@ package de.karfau.as3.persistence.domain.photos {
 		public var id:int;
 
 		/**
-		 * It depends on the implementation how this will be persisted. Could be a blob or a String like "&lt;1,2,3&gt;"
+		 * It depends on the implementation how this will be persisted. Could be a blob or a String like "&lt;1,2,3&gt;" or as an EmbeddedCollection
 		 */
 		public var histogram:Vector.<int>;
 
@@ -33,16 +33,20 @@ package de.karfau.as3.persistence.domain.photos {
 		 */
 		public var time_of_creation:Date;
 
+		[OneToOne]
 		/**
 		 * "?-To-One"-Relation, unidirectional
 		 */
 		public var location:GeoLocation;
 
+		[ManyToOne(mappedBy="photos")]
+		[Required]
 		/**
 		 * "Many-To-One"-Relation, bidirectional
 		 */
 		public var device:Camera;
 
+		[ManyToMany]
 		/**
 		 * "Many-To-Many"-Relation, bidirectional
 		 */

@@ -9,6 +9,7 @@ package de.karfau.as3.persistence {
 	import de.karfau.as3.persistence.domain.TestEntityFactory;
 	import de.karfau.as3.persistence.domain.TestMetaModel;
 	import de.karfau.as3.persistence.domain.metatag.TestMetadataTags;
+	import de.karfau.as3.persistence.domain.metatag.relation.TestMetaTagRelationBase;
 	import de.karfau.as3.persistence.domain.type.TestTypeRegister;
 	import de.karfau.as3.persistence.domain.type.TestTypeUtil;
 	import de.karfau.as3.persistence.domain.type.property.TestClassPropertiesAnalysis;
@@ -22,5 +23,6 @@ package de.karfau.as3.persistence {
 		public var _TestClassPropertiesAnalysis:TestClassPropertiesAnalysis;
 		public var _TestTypeRegister:TestTypeRegister;
 		public var _TestMetaModel:TestMetaModel;
+		public var _TestMetaTagRelationBase:TestMetaTagRelationBase;
 	}
 }

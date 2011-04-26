@@ -10,14 +10,22 @@ package de.karfau.as3.persistence.domain.photos {
 
 	import flash.geom.Point;
 
-	[Entity("geo")]
 	public class GeoLocation {
 
-		meta static const ENTITY_NAME:String = "geo";
-		meta static const IDENTIFIER_NAME:String = "pk";
+		meta static const SIMPLE_NAME:String = "GeoLocation";
 
-		[Id]
-		public var pk:int;
+		private var _id:Number;
+
+		/**
+		 * access via getter and setter
+		 */
+		public function get id():Number {
+			return _id;
+		}
+
+		public function set id(value:Number):void {
+			_id = value;
+		}
 
 		public var height:Number;
 		public var position:Point;

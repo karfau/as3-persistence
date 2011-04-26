@@ -6,12 +6,11 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.type {
+	import de.karfau.as3.persistence.domain.model.EntityRelation;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
 
 	import flash.utils.Dictionary;
-
-	import org.hamcrest.Matcher;
 
 	public class Entity extends AbstractType implements IEntity {
 
@@ -40,15 +39,19 @@ package de.karfau.as3.persistence.domain.type {
 
 		private var _properties:Dictionary = new Dictionary();
 
-		public function getProperties(filter:Matcher = null):Vector.<EntityProperty> {
+		public function getAllProperties(filter:Function = null):Vector.<EntityProperty> {
 			var result:Vector.<EntityProperty> = new Vector.<EntityProperty>();
 			for each(var prop:EntityProperty in _properties) {
-				if (filter == null || filter.matches(prop)) {
+				if (filter == null || filter(prop))
 					result.push(prop);
-				}
-
 			}
 			return result;
+		}
+
+		public function getPropertiesByPersistentClass(persistentClass:Class):Vector.<EntityProperty> {
+			return getAllProperties(function (property:EntityProperty):Boolean {
+				return property.persistentClass == persistentClass
+			});
 		}
 
 		public function hasPropertyWithName(name:String):Boolean {
@@ -59,12 +62,14 @@ package de.karfau.as3.persistence.domain.type {
 			return (_properties[name] as EntityProperty);
 		}
 
-		override public function isPrimitive():Boolean {
-			return false;
+		private var _nonNavigabelRelations:Vector.<EntityRelation> = new Vector.<EntityRelation>();
+
+		public function attachNonNavigableRelation(entityRelation:EntityRelation):void {
+			_nonNavigabelRelations
 		}
 
-		override public function isValue():Boolean {
-			return false;
+		public function get nonNavigabelRelations():Vector.<EntityRelation> {
+			return _nonNavigabelRelations.slice();
 		}
 
 		override protected function describeInstance(...rest):Object {
@@ -72,9 +77,10 @@ package de.karfau.as3.persistence.domain.type {
 		}
 
 		public function setProperty(property:EntityProperty):Boolean {
-			if (_properties[property.name] is IIdentifier && !(property is IIdentifier)) {
-				return false;
+			if (property.declaredBy != null) {
+				throw new ArgumentError(property + " is already part declared by " + property.declaredBy);
 			}
+			property.declaredBy = this;
 			_properties[property.name] = property;
 			return true;
 		}

@@ -14,7 +14,6 @@ package de.karfau.as3.persistence.domain.type {
 	import org.hamcrest.collection.array;
 	import org.hamcrest.core.throws;
 	import org.hamcrest.object.instanceOf;
-	import org.spicefactory.lib.reflect.ClassInfo;
 	import org.spicefactory.lib.reflect.types.Private;
 
 	public class TestTypeUtil {
@@ -140,12 +139,12 @@ package de.karfau.as3.persistence.domain.type {
 
 			var findings:Array = [];
 
-			var found:ClassInfo;
+			var found:Class;
 
 			for each(test in SUPPORTED_BY_getCollectionElementType) {
 				found = TypeUtil.getCollectionElementType(test);
 				assertNotNull(test, found);
-				findings.push(found.getClass());
+				findings.push(found);
 			}
 			assertThat("found expected types", findings, array(EXPECTED_FROM_SUPPORTED_BY_getCollectionElementType));
 
