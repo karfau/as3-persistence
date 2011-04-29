@@ -12,6 +12,7 @@ package de.karfau.as3.persistence.connection {
 
 		public static const CREATE:ConnectionMode = new ConnectionMode("create");
 		public static const READ:ConnectionMode = new ConnectionMode("read");
+		public static const UPDATE:ConnectionMode = new ConnectionMode("update");
 
 		private static const creationAllowed:Boolean = false;
 
@@ -24,6 +25,7 @@ package de.karfau.as3.persistence.connection {
 			if (!creationAllowed) {
 				throw new IllegalOperationError("ConnectionMode is an Enumeration, the only instances allowed exist as static constants.")
 			}
+			_value = value
 		}
 	}
 }
