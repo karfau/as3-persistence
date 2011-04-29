@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/as3-persistence-core/as3-persistence-core.iml" filepath="$PROJECT_DIR$/as3-persistence-core/as3-persistence-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/as3-persistence-sqlite/as3-persistence-sqlite.iml" filepath="$PROJECT_DIR$/as3-persistence-sqlite/as3-persistence-sqlite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../_git/karfau-as3-operations/karfau-as3-operations.iml" filepath="$PROJECT_DIR$/../../_git/karfau-as3-operations/karfau-as3-operations.iml" />
       <module fileurl="file://$PROJECT_DIR$/showcase/showcase.iml" filepath="$PROJECT_DIR$/showcase/showcase.iml" />
     </modules>
   </component>
