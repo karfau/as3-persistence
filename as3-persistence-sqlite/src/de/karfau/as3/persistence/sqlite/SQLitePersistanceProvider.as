@@ -34,9 +34,9 @@ package de.karfau.as3.persistence.sqlite {
 				throw new ArgumentError("parameter needs to be of type BaseSQLConnectionParams.");
 			}
 			var operation:ConnectionOperation = new ConnectionOperation();
-			//operation.onConnect(function rememberConnectionParams():void{})
+			//TODO: operation.onConnect(function rememberConnectionParams():void{})
 			if (!_connection.connected) {
-				_connection.openAsync(p.reference, p.openMode.value, operation.responder, p.autoCompact, p.pageSize, p.encryption);
+				_connection.openAsync(p.reference, p.openMode$, operation.responder, p.autoCompact, p.pageSize, p.encryption);
 			} else {
 				_connection.attach(p.referenceName, p.reference, operation.responder, p.encryption);
 			}
@@ -55,27 +55,9 @@ package de.karfau.as3.persistence.sqlite {
 		private var statementCache:StatementCache;
 
 		public function initializePersistentModel():IInitializeOperation {
-			var operation:InitializeOperation = new InitializeOperation();
-			try {
-				if (connection == null || connection.connected == false)
-					throw new Error("The persistent model can only be initialized if all required connections are established.");
-
-				if (metaModel.canBeModified())
-					metaModel.detectRelations();
-
-				if (statementCache == null)
-					statementCache = new StatementCache();
-
-				operation.createTableDefinitions(statementCache, metaModel);//synchronous
-
-				/*operation.verifyExistingTables(connection);//async
-				 operation.createTablesInDatabase(connection);//async*/
-
-			} catch(error:Error) {
-				operation.fail(error);
-			}
-
-			return null;
+			var operation:InitializeOperation = new InitializeOperation(connection, metaModel);
+			operation.call();
+			return operation;
 		}
 	}
 }

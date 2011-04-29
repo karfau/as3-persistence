@@ -63,7 +63,7 @@ package de.karfau.as3.persistence.sqlite.statement {
 			return result;
 		}
 
-		private function executionOrder():Vector.<Vector.<CreateTableStatement>> {
+		public function executionOrder():Vector.<Vector.<CreateTableStatement>> {
 			var remaining:Object = {};
 			var remainingCounter:uint = 0;
 			var executed:Object = {};

@@ -9,7 +9,9 @@ package de.karfau.as3.persistence.sqlite {
 	import de.karfau.as3.persistence.domain.EntityFactory;
 	import de.karfau.as3.persistence.domain.MetaModel;
 	import de.karfau.as3.persistence.domain.photos.*;
+	import de.karfau.as3.persistence.sqlite.connection.InMemoryConnection;
 	import de.karfau.as3.persistence.sqlite.model.CreateTableGenerator;
+	import de.karfau.as3.persistence.sqlite.operations.AsyncOperationHandler;
 	import de.karfau.as3.persistence.sqlite.statement.StatementCache;
 
 	import org.flexunit.asserts.assertNull;
@@ -23,8 +25,12 @@ package de.karfau.as3.persistence.sqlite {
 		private var provider:SQLitePersistanceProvider;
 		private var model:MetaModel;
 
-		[Before]
+		private var async:AsyncOperationHandler;
+
+		[Before(async)]
 		public function setup():void {
+			async = null;
+
 			assertNull("provider", provider);
 			provider = new SQLitePersistanceProvider();
 			model = provider.metaModel;
@@ -36,10 +42,19 @@ package de.karfau.as3.persistence.sqlite {
 			model.registerEntity(factory.createEntity(Sight));
 			model.registerEntity(factory.createEntity(Person));
 			model.registerEntity(factory.createEntity(Photographer));
-			model.detectRelations();
+
+			//model.detectRelations();
+			async = new AsyncOperationHandler(this, 200);
+			provider.connect(InMemoryConnection.Connection())
+			.onConnect(async.addExpectedHandler(function():void {
+				//trace.apply(null, rest);
+				assertThat("connection is there", provider.connection.connected);
+			}))
+			.onConnectionFailed(async.createFailingHandler());
 		}
 
 		[Test]
+		[Ignore]
 		public function testCreateTableGenerator():void {
 			var stmtCache:StatementCache = new StatementCache();
 			var generator:CreateTableGenerator = new CreateTableGenerator(stmtCache);
@@ -53,6 +68,18 @@ package de.karfau.as3.persistence.sqlite {
 
 			assertThat("batches", batches, arrayWithSize(3));
 		}
+
+		[Test(async,timeout="300000")]
+		public function initFromModel():void {
+			async = new AsyncOperationHandler(this, 300000);
+			provider.initializePersistentModel()
+			.onInitializeComplete(async.addExpectedHandler(function initCompleteHandler():void {
+				trace("winning the price");
+			}))
+			.onInitializeFailed(async.createFailingHandler());
+
+		}
+
 	}
 }
 
