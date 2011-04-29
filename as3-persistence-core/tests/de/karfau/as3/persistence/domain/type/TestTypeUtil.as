@@ -6,14 +6,16 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.type {
-	import org.flexunit.asserts.assertFalse;
+	import flash.geom.Point;
+
 	import org.flexunit.asserts.assertNotNull;
 	import org.flexunit.asserts.assertNull;
-	import org.flexunit.asserts.assertTrue;
 	import org.hamcrest.assertThat;
 	import org.hamcrest.collection.array;
 	import org.hamcrest.core.throws;
 	import org.hamcrest.object.instanceOf;
+	import org.hamcrest.object.isFalse;
+	import org.hamcrest.object.isTrue;
 	import org.spicefactory.lib.reflect.types.Private;
 
 	public class TestTypeUtil {
@@ -26,10 +28,10 @@ package de.karfau.as3.persistence.domain.type {
 			var _false:Array = [Object, null, undefined];
 
 			for each(test in _true)
-				assertTrue(test, TypeUtil.isPrimitiveType(test));
+				assertThat(test + " is primitive", TypeUtil.isPrimitiveType(test), isTrue());
 
 			for each(test in _false)
-				assertFalse("not " + test, TypeUtil.isPrimitiveType(test));
+				assertThat(test + " is not primitive", TypeUtil.isPrimitiveType(test), isFalse());
 
 		}
 
@@ -39,15 +41,17 @@ package de.karfau.as3.persistence.domain.type {
 			var _false:Array = [Object, Boolean, String, null, undefined];
 
 			for each(test in _true)
-				assertTrue(test, TypeUtil.isNumericType(test));
+				assertThat(test + " is numeric", TypeUtil.isNumericType(test), isTrue());
 
 			for each(test in _false)
-				assertFalse("not " + test, TypeUtil.isNumericType(test));
+				assertThat(test + " is not numeric", TypeUtil.isNumericType(test), isFalse());
 
 		}
 
 		public static const TRUE_FOR_isCollectionType:Array =
 												[
+													//TODO: Point shouldn't be a collection
+													Point,
 													//primitive types:
 													Vector.<int>, Vector.<Number>, Vector.<uint>,//based on special type
 													Vector.<Boolean>,Vector.<String>,//special: is based on Vector.<*>
@@ -79,11 +83,11 @@ package de.karfau.as3.persistence.domain.type {
 			FALSE_FOR_isCollectionType.push(PrivateGlobal);
 
 			for each(test in TRUE_FOR_isCollectionType) {
-				assertTrue(test, TypeUtil.isCollectionType(test));
+				assertThat(test + " is a collection", TypeUtil.isCollectionType(test), isTrue());
 			}
 
 			for each(test in FALSE_FOR_isCollectionType) {
-				assertFalse("not " + test, TypeUtil.isCollectionType(test));
+				assertThat(test + " is not a collection", TypeUtil.isCollectionType(test), isFalse());
 			}
 
 			var _throws:Array = [Vector.<*>];

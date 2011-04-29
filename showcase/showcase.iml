@@ -3,23 +3,18 @@
   <component name="Flex.Build.Configuration">
     <option name="DO_BUILD" value="true" />
     <option name="OUTPUT_TYPE" value="Library" />
-    <option name="OUTPUT_FILE_NAME" value="as3_persistence_core.swc" />
+    <option name="OUTPUT_FILE_NAME" value="showcase.swc" />
     <option name="TARGET_PLAYER_VERSION" value="10.0.0" />
-    <option name="ADDITIONAL_COMPILER_OPTIONS" value="-keep-as3-metadata+=Entity,Id,OneToOne,OneToMany,ManyToOne,ManyToMany" />
     <option name="VERSION" value="3" />
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
     </content>
     <orderEntry type="jdk" jdkName="ActionScript 3.0 (player 10.0,based on 4.1.0.16076)" jdkType="Flex SDK Type" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="Spicelib Subset 2.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Hamcrest-AS3-only v1.1.3" level="application" />
-    <orderEntry type="library" scope="TEST" name="FlexUnit4-AS3 (SDK4.1)" level="application" />
-    <orderEntry type="module" module-name="showcase" scope="TEST" />
+    <orderEntry type="module" module-name="as3-persistence-core" />
   </component>
 </module>
 

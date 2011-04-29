@@ -70,7 +70,7 @@ package de.karfau.as3.persistence.domain {
 			assertThat("should not create types for collection properties", factory.typeRegister.hasTypeFor(Class(Vector.<Motif>)), isFalse());
 			assertThat("should not create types for entity properties", factory.typeRegister.hasTypeFor(GeoLocation), isFalse());
 			var property:EntityProperty = entity.getProperty("motifes");
-			assertThat("'motifes' should have " + Motif + " as persistentClass", property, hasPropertyWithValue("persistentClass", Motif))
+			assertThat("'motifes' should have " + Motif + " as persistentClass", property, hasPropertyWithValue("persistentClass", Motif));
 
 			assertThat("creating same again, returns same instance:", entity, strictlyEqualTo(factory.createEntity(Photo)));
 			/*
@@ -111,7 +111,7 @@ package de.karfau.as3.persistence.domain {
 		[Test]
 		public function CreatingAnEntityFromAClassWithMetatags():void {
 			entity = factory.createEntity(Camera);
-			assertThat("matches expected entity", entity, matchesExpectedEntity(Camera, Camera.ENTITY_NAME));
+			assertThat("matches expected entity", entity, matchesExpectedEntity(Camera, Camera.SIMPLE_NAME));
 
 			var identifier:IIdentifier = entity.identifier;
 			assertThat("primaryKey was detected", identifier, matchesValidIdentifier(identifier, Camera.IDENTIFIER_NAME));
@@ -123,6 +123,7 @@ package de.karfau.as3.persistence.domain {
 			assertThat("'photos' should have " + Photo + " as persistentClass", property, hasPropertyWithValue("persistentClass", Photo));
 		}
 
+		//Todo: Matcher not an assertion
 		private function matchesValidIdentifier(identifier:IIdentifier, expectedPropertyName:String):Matcher {
 			return allOf(
 									notNullValue(),

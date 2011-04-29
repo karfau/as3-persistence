@@ -10,9 +10,10 @@ package de.karfau.as3.persistence.domain.photos {
 
 	import flash.geom.Point;
 
+	[Entity("Geo")]
 	public class GeoLocation {
 
-		meta static const SIMPLE_NAME:String = "GeoLocation";
+		meta static const ENTITY_NAME:String = "Geo";
 
 		private var _id:Number;
 

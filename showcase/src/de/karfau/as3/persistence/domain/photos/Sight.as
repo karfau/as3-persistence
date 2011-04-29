@@ -12,6 +12,8 @@ package de.karfau.as3.persistence.domain.photos {
 		public var name:String;
 		public var place:String;
 
+		//public var location:GeoLocation;
+
 		override public function getLabel():String {
 			return name + " in " + place;
 		}

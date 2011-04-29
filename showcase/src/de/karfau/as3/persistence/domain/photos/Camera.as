@@ -8,10 +8,9 @@
 package de.karfau.as3.persistence.domain.photos {
 	import de.karfau.as3.persistence.domain.meta;
 
-	[Entity("cam")]
 	public class Camera {
 
-		meta static const ENTITY_NAME:String = "cam";
+		meta static const SIMPLE_NAME:String = "Camera";
 		meta static const IDENTIFIER_NAME:String = "pk";
 
 		[Id]
@@ -22,7 +21,6 @@ package de.karfau.as3.persistence.domain.photos {
 		public var serialno:String;
 
 		[OneToMany(mappedBy="device")]
-		//TODO: throw for wrong name
 		[ArrayElementType("de.karfau.as3.persistence.domain.photos.Photo")]
 		public var photos:Array;
 
