@@ -6,7 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.type {
-	import de.karfau.as3.persistence.domain.model.EntityRelation;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
 	import de.karfau.as3.persistence.domain.type.property.IProperty;
@@ -64,16 +63,6 @@ package de.karfau.as3.persistence.domain.type {
 			return (_properties[name] as EntityProperty);
 		}
 
-		private var _nonNavigabelRelations:Vector.<EntityRelation> = new Vector.<EntityRelation>();
-
-		public function attachNonNavigableRelation(entityRelation:EntityRelation):void {
-			_nonNavigabelRelations.push(entityRelation);
-		}
-
-		public function get nonNavigabelRelations():Vector.<EntityRelation> {
-			return _nonNavigabelRelations.slice();
-		}
-
 		override protected function describeInstance(...rest):Object {
 			return super.describeInstance(rest, {persistenceName: persistenceName});
 		}
@@ -87,16 +76,31 @@ package de.karfau.as3.persistence.domain.type {
 			return true;
 		}
 
-		public var superEntity:IEntity;
+		private var _superEntity:IEntity;
+		public function get superEntity():IEntity {
+			return _superEntity;
+		}
+
+		public function set superEntity(superEntity:IEntity):void {
+			_superEntity = superEntity;
+		}
+
+		public function get superRootEntity():IEntity {
+			var result:IEntity = _superEntity;
+			while (result.hasSuperEntity()) {
+				result = result.superEntity;
+			}
+			return result;
+		}
 
 		public function hasSuperEntity():Boolean {
-			return superEntity != null;
+			return _superEntity != null;
 		}
 
 		public function getPropertyFromDeclaringEntity(name:String):IProperty {
 			if (hasSuperEntity()) {
-				if (superEntity.hasPropertyWithName(name))
-					return superEntity.getPropertyFromDeclaringEntity(name);
+				if (_superEntity.hasPropertyWithName(name))
+					return _superEntity.getPropertyFromDeclaringEntity(name);
 			}
 			return getProperty(name);
 		}
@@ -105,7 +109,7 @@ package de.karfau.as3.persistence.domain.type {
 			if (!hasPropertyWithName(name)) {
 				throw new Error(this + " has no property with name " + name + ".")
 			}
-			return hasSuperEntity() && superEntity.hasPropertyWithName(name);
+			return hasSuperEntity() && _superEntity.hasPropertyWithName(name);
 		}
 
 		public function accept(visitor:IEntityVisitor):void {

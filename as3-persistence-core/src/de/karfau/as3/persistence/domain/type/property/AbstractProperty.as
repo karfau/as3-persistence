@@ -8,7 +8,7 @@
 package de.karfau.as3.persistence.domain.type.property {
 	import de.karfau.as3.persistence.domain.metatag.relation.IMetaTagRelation;
 	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagRelationBase;
-	import de.karfau.as3.persistence.domain.model.EntityRelation;
+	import de.karfau.as3.persistence.domain.model.IRelation;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 
 	import flash.errors.IllegalOperationError;
@@ -64,13 +64,13 @@ package de.karfau.as3.persistence.domain.type.property {
 			_relationTag = MetaTagRelationBase(value);
 		}
 
-		private var _relation:EntityRelation;
+		private var _relation:IRelation;
 
-		public function get relation():EntityRelation {
+		public function get relation():IRelation {
 			return _relation;
 		}
 
-		public function set relation(value:EntityRelation):void {
+		public function set relation(value:IRelation):void {
 			_relation = value;
 		}
 

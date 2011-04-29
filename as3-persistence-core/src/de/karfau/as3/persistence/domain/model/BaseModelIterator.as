@@ -18,7 +18,7 @@ package de.karfau.as3.persistence.domain.model {
 
 		protected var model:MetaModel;
 
-		public function BaseModelIterator(model:MetaModel) {
+		public function iterate(model:MetaModel):void {
 			this.model = model;
 			model.visitAllEntities(this);
 		}

@@ -7,6 +7,7 @@
  */
 package de.karfau.as3.persistence.domain.model.analysis {
 	import de.karfau.as3.persistence.domain.MetaModel;
+	import de.karfau.as3.persistence.domain.metatag.relation.IMetaTagRelation;
 	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToMany;
 	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToOne;
 	import de.karfau.as3.persistence.domain.model.BaseModelIterator;
@@ -24,10 +25,11 @@ package de.karfau.as3.persistence.domain.model.analysis {
 
 		private var entityTypes:Vector.<Class>;
 
-		public function ModelRelationsAnalysis(model:MetaModel) {
-			new ModelInheritanceAnalysis(model);
+		override public function iterate(model:MetaModel):void {
+			var inheritance:ModelInheritanceAnalysis = new ModelInheritanceAnalysis();
+			inheritance.iterate(model);
 			this.entityTypes = model.getRegisteredEntityTypes();
-			super(model);
+			return super.iterate(model);
 		}
 
 		override public function visitProperty(property:IProperty):void {
@@ -40,7 +42,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 
 				var inverseEntity:IEntity = model.getRegisteredEntityType(property.persistentClass);
 				var inverseProperties:Vector.<EntityProperty> = inverseEntity.getPropertiesByPersistentClass(currentEntity.clazz);
-				var mapped:EntityProperty;
+				var inverseProperty:EntityProperty;
 
 				var relation:EntityRelation = new EntityRelation(EntityProperty(property));
 
@@ -55,13 +57,13 @@ package de.karfau.as3.persistence.domain.model.analysis {
 					if (inverseProperties.length == 1) {
 						if (!isSuitableInverseMapping(property, inverseProperties[0])) {
 							var errorMsg:String = "The only relation-mapping found for " + (property.relationTag ? property.relationTag.toString(property) : property) +
-																		" was " + inverseProperties[0].relationTag.toString(inverseProperties[0]) + ".\n";
+																		" was " + (inverseProperties[0].relationTag ? inverseProperties[0].relationTag.toString(inverseProperties[0]) : inverseProperties[0]) + ".\n";
 
 							/* Only one exists and this one is not suitable means:
 							 property   | mapping					 | solution
 							 -----------|------------------|--------------
 							 nothing    | [owning]				 | ignore/dont create Relation: has been detected or will bedetected
-							 [owning]   | [owning]				 | could be two unidirectional mappings? Not implmented yet.
+							 [owning]   | [owning]				 | could be two unidirectional mappings? Not implemented yet.
 							 nothing    | nothing    			 | Error: for Bidirectional relations 1 MetaTag is required
 							 nothing or |                  |
 							 [owning]   | [wrong mappedBy] | Error: Syntax, wrong attributename?
@@ -85,28 +87,33 @@ package de.karfau.as3.persistence.domain.model.analysis {
 					}
 					for each(var iprop:EntityProperty in inverseProperties) {
 						if (isSuitableInverseMapping(property, iprop)) {
-							if (mapped != null) {
+							if (inverseProperty != null) {
 								throw new SyntaxError("When analysing " + inverseEntity + " for the relation from " + property.relationTag.toString(property) +
 																			" there where at least 2 properties that would fit:\n" +
-																			"\t" + mapped.relationTag.toString(mapped) + "\n" +
+																			"\t" + inverseProperty.relationTag.toString(inverseProperty) + "\n" +
 																			"\t" + iprop.relationTag.toString(iprop) + "\n" +
 																			"And it was ambiguous which one to use.");
 							} else {
-								mapped = iprop;
+								inverseProperty = iprop;
 							}
 						}
 					}
-					if (mapped == null) {
+					if (inverseProperty == null) {
 						throw new SyntaxError("Detected a possible biderectional relation when analysing " + property +
 																	" but none of the detected inverse properties was suitable:\n" +
 																	"\t" + inverseProperties.join("\n\t"));
 					} else {
+						var other:IMetaTagRelation;
 						if (property.relationTag == null) {
-							EntityProperty(property).relationTag = mapped.relationTag.createOwningSide();
-						} else if (mapped.relationTag == null) {
-							EntityProperty(mapped).relationTag = property.relationTag.createInverseSide(property.name);
+							other = inverseProperty.relationTag.createOwningSide();
+							other.validateCardinality(getReflectionProperty(property));
+							EntityProperty(property).relationTag = other;
+						} else if (inverseProperty.relationTag == null) {
+							other = property.relationTag.createInverseSide(property.name)
+							other.validateCardinality(getReflectionProperty(inverseProperty));
+							EntityProperty(inverseProperty).relationTag = other;
 						}
-						relation.setInverseNavigable(mapped);
+						relation.setInverseNavigable(inverseProperty);
 					}
 				}
 			}
@@ -118,7 +125,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 
 		private function isSuitableInverseMapping(owning:IProperty, candidate:IProperty):Boolean {
 			return (owning.relationTag && !owning.relationTag.isInverseSide() && candidate.relationTag == null) ||
-						 (owning.relationTag == null && candidate.relationTag.isInverseSide() && candidate.relationTag.mappedBy == owning.name)
+						 (owning.relationTag == null && candidate.relationTag != null && candidate.relationTag.isInverseSide() && candidate.relationTag.mappedBy == owning.name)
 		}
 
 		private function getReflectionProperty(from:IProperty):Property {
