@@ -10,10 +10,14 @@ package de.karfau.as3.persistence.operation {
 
 	public class ResultType {
 
+		private static var creationAllowed:Boolean = true;
+
 		public static const SUCCESS:ResultType = new ResultType(true);
 		public static const ERROR:ResultType = new ResultType(false);
 
-		private static const creationAllowed:Boolean = false;
+		{
+			creationAllowed = false;
+		}
 
 		private var _value:Boolean;
 		public function get value():Boolean {

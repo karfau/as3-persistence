@@ -16,6 +16,8 @@ package de.karfau.as3.persistence.connection {
 
 		function get openMode():ConnectionMode;
 
+		function get openMode$():String;
+
 		function get encryption():ByteArray;
 	}
 }

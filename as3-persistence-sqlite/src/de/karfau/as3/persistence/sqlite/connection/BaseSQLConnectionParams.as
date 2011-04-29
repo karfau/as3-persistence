@@ -39,6 +39,10 @@ package de.karfau.as3.persistence.sqlite.connection {
 			return _openMode;
 		}
 
+		public function get openMode$():String {
+			return _openMode != null ? _openMode.value : ConnectionMode.CREATE.value;
+		}
+
 		protected var _encryption:ByteArray;
 
 		public function get encryption():ByteArray {

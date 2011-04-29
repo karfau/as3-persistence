@@ -10,12 +10,15 @@ package de.karfau.as3.persistence.connection {
 
 	public class ConnectionMode {
 
+		private static var creationAllowed:Boolean = true;
+
 		public static const CREATE:ConnectionMode = new ConnectionMode("create");
 		public static const READ:ConnectionMode = new ConnectionMode("read");
 		public static const UPDATE:ConnectionMode = new ConnectionMode("update");
 
-		private static const creationAllowed:Boolean = false;
-
+		{
+			creationAllowed = false;
+		}
 		private var _value:String;
 		public function get value():String {
 			return _value;

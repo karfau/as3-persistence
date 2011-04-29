@@ -18,7 +18,7 @@ package de.karfau.as3.persistence.sqlite.operation {
 
 		public function onConnectionFailed(handler:Function):IConnectionOperation {
 			addErrorHandler(handler);
-			return null;
+			return this;
 		}
 
 	}

@@ -14,7 +14,7 @@ package de.karfau.as3.persistence.operation {
 		private var _responder:Responder;
 		public function get responder():Responder {
 			if (_responder == null) {
-				_responder = new Responder(responderSuccess, responderError)
+				_responder = new Responder(responderSuccess, responderError);
 			}
 			return _responder;
 		}
