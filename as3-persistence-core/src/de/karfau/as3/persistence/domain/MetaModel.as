@@ -10,6 +10,7 @@ package de.karfau.as3.persistence.domain {
 	import de.karfau.as3.persistence.domain.type.IEntity;
 	import de.karfau.as3.persistence.domain.type.IEntityVisitor;
 
+	import flash.errors.IllegalOperationError;
 	import flash.utils.Dictionary;
 
 	public class MetaModel {
@@ -18,6 +19,8 @@ package de.karfau.as3.persistence.domain {
 		public const classes:Dictionary = new Dictionary();
 
 		public function registerEntity(entity:IEntity):void {
+			if (!canBeModified())
+				throw new IllegalOperationError("This instance has already been analyzed for relations and can not be modified any longer.")
 			var name:String = entity.persistenceName;
 			if (hasPersistanceName(name))
 				throw new ArgumentError("An entity with the persistanceName '" + name + "' has already been set:" + persistanceNames[name]);
@@ -54,8 +57,17 @@ package de.karfau.as3.persistence.domain {
 			}
 		}
 
+		private var relationsAnalysis:ModelRelationsAnalysis;
+
+		public function canBeModified():Boolean {
+			return relationsAnalysis == null;
+		}
+
 		public function detectRelations():void {
-			var relationsAnalysis:ModelRelationsAnalysis = new ModelRelationsAnalysis(this);
+			if (canBeModified()) {
+				relationsAnalysis = new ModelRelationsAnalysis();
+				relationsAnalysis.iterate(this);
+			}
 		}
 	}
 }
