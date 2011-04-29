@@ -52,19 +52,28 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 			return mappedBy != null;
 		}
 
-		protected function get name():String {
-			throw new Error("get name() needs to be implmented in " + this)
-		}
-
 		public function toString(attachedTo:Object = null):String {
 			return "[" + name + (isInverseSide() ? "(mappedBy='" + mappedBy + "')" : "") + "]" + (attachedTo != null ? " @ " + attachedTo : "");
 		}
 
-		public function validateCardinality(reflectionSource:Property):void {
-			throw new Error("validateCardinality(reflectionSource:Property) needs to be implmented in " + this)
+		protected function get name():String {
+			throw new Error("get name() needs to be implmented in " + this)
 		}
 
 		private var _InverseRelation:Class;
+		protected function get InverseRelation():Class {
+			return _InverseRelation;
+		}
+
+		public function MetaTagRelationBase(InverseRelation:Class) {
+			this._InverseRelation = InverseRelation;
+			if (InverseRelation == null)
+				throw new ArgumentError("InverseRelation has not been specified by " + this);
+		}
+
+		public function validateCardinality(reflectionSource:Property):void {
+			throw new Error("validateCardinality(reflectionSource:Property) needs to be implmented in " + this);
+		}
 
 		public function createOwningSide():IMetaTagRelation {
 			if (!isInverseSide()) {
@@ -82,14 +91,8 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 			return result;
 		}
 
-		public function MetaTagRelationBase(InverseRelation:Class) {
-			this._InverseRelation = InverseRelation;
-			if (InverseRelation == null)
-				throw new ArgumentError("InverseRelation has not been specified by " + this);
-		}
-
-		protected function get InverseRelation():Class {
-			return _InverseRelation;
+		public function hasOneSide():Boolean {
+			return true;
 		}
 	}
 }

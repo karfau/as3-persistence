@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.domain.metatag.relation {
+	import org.spicefactory.lib.reflect.Property;
+
 	public interface IMetaTagRelation {
 
 		function get mappedBy():String;
@@ -17,5 +19,9 @@ package de.karfau.as3.persistence.domain.metatag.relation {
 		function toString(attachedTo:Object = null):String;
 
 		function createInverseSide(mappedBy:String):IMetaTagRelation;
+
+		function validateCardinality(reflectionSource:Property):void;
+
+		function hasOneSide():Boolean;
 	}
 }
