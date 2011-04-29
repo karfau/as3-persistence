@@ -32,15 +32,14 @@ package de.karfau.as3.persistence.domain.photos {
 
 		[Test]
 		public function testRelationExistance():void {
-			var p:Printer = new Printer(model);
+			var p:Printer = new Printer();
+			p.iterate(model);
 			trace(p.all);
 		}
 	}
 }
 
-import de.karfau.as3.persistence.domain.MetaModel;
 import de.karfau.as3.persistence.domain.model.BaseModelIterator;
-import de.karfau.as3.persistence.domain.model.EntityRelation;
 import de.karfau.as3.persistence.domain.type.Entity;
 import de.karfau.as3.persistence.domain.type.IEntity;
 import de.karfau.as3.persistence.domain.type.property.IIdentifier;
@@ -56,15 +55,15 @@ class Printer extends BaseModelIterator {
 		trace("ENTITY:", entity);
 		if (entity.hasSuperEntity())
 			trace("\tSUPERENTITY:", Entity(entity).superEntity);
-		for each(var er:EntityRelation in entity.nonNavigabelRelations) {
-			trace("\tNonNavigableRELATION:", er.inverseEntity.clazz, "<-", er.owningProperty.relationTag.toString(propertyToString(er.owningProperty, true)));
-		}
+		/*for each(var er:EntityRelation in entity.nonNavigabelRelations) {
+		 trace("\tNonNavigableRELATION:", er.inverseEntity.clazz, "<-", er.owningProperty.relationTag.toString(propertyToString(er.owningProperty, true)));
+		 }*/
 		super.visitEntity(entity);
 	}
 
 	override public function visitProperty(property:IProperty):void {
 
-		trace("\tProperty:", propertyToString(property),
+		trace("\t" + (property is IIdentifier ? "Identifier" : "Property"), ":", propertyToString(property),
 				 currentEntity.isPropertyInheritedFromSuperEntity(property.name) ?
 				 " {{ declared by " + currentEntity.getPropertyFromDeclaringEntity(property.name).declaredBy.clazz + " }}" : ""
 				 );
@@ -91,10 +90,6 @@ class Printer extends BaseModelIterator {
 			result = (prependEntity ? declaredBy.getSimpleName() + "." : "") + name + ":" + ClassInfo.forClass(persistentClass).simpleName + (isCollection() ? "(collection)" : "");
 		return result;
 		//return prop.toString();
-	}
-
-	public function Printer(model:MetaModel) {
-		super(model);
 	}
 
 	private function trace(...rest):void {
