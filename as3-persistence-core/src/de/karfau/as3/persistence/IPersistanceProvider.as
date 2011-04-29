@@ -6,9 +6,10 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence {
-	import de.karfau.as3.persistence.connection.IConnectionOperation;
 	import de.karfau.as3.persistence.connection.IConnectionParams;
 	import de.karfau.as3.persistence.domain.MetaModel;
+	import de.karfau.as3.persistence.operation.IConnectionOperation;
+	import de.karfau.as3.persistence.operation.IInitializeOperation;
 
 	public interface IPersistanceProvider {
 
@@ -16,7 +17,9 @@ package de.karfau.as3.persistence {
 
 		function get metaModel():MetaModel;
 
-		function finalizeMetaModel():Boolean;
+		//function set metaModel(value:MetaModel):void;
+
+		function initializePersistentModel():IInitializeOperation;
 
 	}
 }

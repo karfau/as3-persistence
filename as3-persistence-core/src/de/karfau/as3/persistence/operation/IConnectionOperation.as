@@ -5,7 +5,7 @@
  * Time: 18:04
  * To change this template use File | Settings | File Templates.
  */
-package de.karfau.as3.persistence.connection {
+package de.karfau.as3.persistence.operation {
 	public interface IConnectionOperation {
 
 		function onConnect(handler:Function):IConnectionOperation;

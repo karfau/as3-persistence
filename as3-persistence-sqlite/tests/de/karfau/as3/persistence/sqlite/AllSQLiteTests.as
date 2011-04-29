@@ -11,6 +11,6 @@ package de.karfau.as3.persistence.sqlite {
 	[RunWith("org.flexunit.runners.Suite")]
 	public class AllSQLiteTests {
 
-
+		public var _TestComplexModel:TestComplexModel;
 	}
 }
