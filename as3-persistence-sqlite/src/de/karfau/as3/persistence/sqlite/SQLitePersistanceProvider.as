@@ -22,25 +22,31 @@ package de.karfau.as3.persistence.sqlite {
 
 		private var _connection:SQLConnection;
 		public function get connection():SQLConnection {
+			if (_connection == null)
+				_connection = new SQLConnection();
 			return _connection;
 		}
 
+		private var connectOperation:ConnectionOperation;
+		private const connectedParameters:Vector.<BaseSQLConnectionParams> = new Vector.<BaseSQLConnectionParams>();
+
 		public function connect(parameter:IConnectionParams):IConnectionOperation {
-			if (_connection == null) {
-				_connection = new SQLConnection();
+
+			if (connectOperation == null) {
+				connectOperation = new ConnectionOperation(connection);
+				connectOperation.releaseHandler = function removeAfterExecution():void {
+					this.connectOperation = null;
+				};
 			}
-			var p:BaseSQLConnectionParams = parameter as BaseSQLConnectionParams;
-			if (p == null) {
-				throw new ArgumentError("parameter needs to be of type BaseSQLConnectionParams.");
-			}
-			var operation:ConnectionOperation = new ConnectionOperation();
-			//TODO: operation.onConnect(function rememberConnectionParams():void{})
-			if (!_connection.connected) {
-				_connection.openAsync(p.reference, p.openMode$, operation.responder, p.autoCompact, p.pageSize, p.encryption);
-			} else {
-				_connection.attach(p.referenceName, p.reference, operation.responder, p.encryption);
-			}
-			return operation;
+
+			var responderOperation:IConnectionOperation = connectOperation.connectWith(parameter as BaseSQLConnectionParams);
+
+			responderOperation.onConnect(function handleConnectFirst(...rest):void {
+				connectedParameters.push(parameter);
+			});
+			//connectOperation.call();//is ignored if is already working on something
+
+			return responderOperation;
 		}
 
 		private var _metaModel:MetaModel = new MetaModel();
@@ -55,6 +61,7 @@ package de.karfau.as3.persistence.sqlite {
 		private var statementCache:StatementCache;
 
 		public function initializePersistentModel():IInitializeOperation {
+			//TODO: what about calling it twice: should not execute everything again. should it throw an Error?
 			var operation:InitializeOperation = new InitializeOperation(connection, metaModel);
 			operation.call();
 			return operation;

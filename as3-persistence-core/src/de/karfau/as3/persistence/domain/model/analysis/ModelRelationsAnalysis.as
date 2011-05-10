@@ -11,7 +11,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToMany;
 	import de.karfau.as3.persistence.domain.metatag.relation.MetaTagOneToOne;
 	import de.karfau.as3.persistence.domain.model.BaseModelIterator;
-	import de.karfau.as3.persistence.domain.model.EntityRelation;
+	import de.karfau.as3.persistence.domain.model.Relationship;
 	import de.karfau.as3.persistence.domain.type.Entity;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
@@ -44,7 +44,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 				var inverseProperties:Vector.<EntityProperty> = inverseEntity.getPropertiesByPersistentClass(currentEntity.clazz);
 				var inverseProperty:EntityProperty;
 
-				var relation:EntityRelation = new EntityRelation(EntityProperty(property));
+				var relation:Relationship = new Relationship(EntityProperty(property));
 
 				if (inverseProperties.length == 0) {//unidirectional relation
 					if (property.relationTag == null) {

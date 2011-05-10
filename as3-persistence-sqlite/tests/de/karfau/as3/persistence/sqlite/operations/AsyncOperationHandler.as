@@ -95,7 +95,7 @@ class ErrorEvent extends Event {
 	}
 
 	override public function toString():String {
-		return "failingHandler " + type + " was triggered By " + error;
+		return "failingHandler " + type + " was triggered By " + error + "\nwith stacktrace:\n" + error.getStackTrace();
 	}
 
 	override public function clone():Event {

@@ -3,6 +3,7 @@
     <option name="myName" value="Project Default" />
     <option name="myLocal" value="false" />
     <inspection_tool class="FlexUnitClassInProductSourceInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="JSUndeclaredVariable" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="JSUnusedGlobalSymbols" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="JSUnusedLocalSymbols" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="ReservedWordUsedAsNameJS" enabled="true" level="INFO" enabled_by_default="true" />

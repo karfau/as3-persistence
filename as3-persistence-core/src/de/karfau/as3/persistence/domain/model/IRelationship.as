@@ -10,7 +10,7 @@ package de.karfau.as3.persistence.domain.model {
 	import de.karfau.as3.persistence.domain.type.IEntity;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 
-	public interface IRelation {
+	public interface IRelationship {
 		function get owningProperty():EntityProperty;
 
 		function get owningEntity():IEntity;

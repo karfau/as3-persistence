@@ -14,6 +14,8 @@ package de.karfau.as3.persistence.sqlite {
 	import de.karfau.as3.persistence.sqlite.operations.AsyncOperationHandler;
 	import de.karfau.as3.persistence.sqlite.statement.StatementCache;
 
+	import flash.filesystem.File;
+
 	import org.flexunit.asserts.assertNull;
 	import org.hamcrest.assertThat;
 	import org.hamcrest.collection.arrayWithSize;
@@ -27,7 +29,7 @@ package de.karfau.as3.persistence.sqlite {
 
 		private var async:AsyncOperationHandler;
 
-		[Before(async)]
+		[Before(async, timeout="20000")]
 		public function setup():void {
 			async = null;
 
@@ -44,13 +46,22 @@ package de.karfau.as3.persistence.sqlite {
 			model.registerEntity(factory.createEntity(Photographer));
 
 			//model.detectRelations();
-			async = new AsyncOperationHandler(this, 200);
+			async = new AsyncOperationHandler(this, 1000);
+			var dbfile:File = File.desktopDirectory.resolvePath("beweis.sqlite");
 			provider.connect(InMemoryConnection.Connection())
-			.onConnect(async.addExpectedHandler(function():void {
+				//provider.connect(FileBasedConnection.Connection(dbfile, ConnectionMode.CREATE))
+			.onConnect(async.addExpectedHandler(function assert():void {
 				//trace.apply(null, rest);
 				assertThat("connection is there", provider.connection.connected);
 			}))
 			.onConnectionFailed(async.createFailingHandler());
+
+			/*provider.connect(InMemoryConnection.Attachment("test2"))
+			 .onConnect(async.addExpectedHandler(function assert2():void {
+			 //trace.apply(null, rest);
+			 assertThat("connection2 is there", provider.connection.connected);
+			 }))
+			 .onConnectionFailed(async.createFailingHandler());*/
 		}
 
 		[Test]

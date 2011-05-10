@@ -55,7 +55,7 @@ class Printer extends BaseModelIterator {
 		trace("ENTITY:", entity);
 		if (entity.hasSuperEntity())
 			trace("\tSUPERENTITY:", Entity(entity).superEntity);
-		/*for each(var er:EntityRelation in entity.nonNavigabelRelations) {
+		/*for each(var er:Relationship in entity.nonNavigabelRelations) {
 		 trace("\tNonNavigableRELATION:", er.inverseEntity.clazz, "<-", er.owningProperty.relationTag.toString(propertyToString(er.owningProperty, true)));
 		 }*/
 		super.visitEntity(entity);

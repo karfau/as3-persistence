@@ -12,7 +12,7 @@ package de.karfau.as3.persistence.domain.model {
 
 	import flash.errors.IllegalOperationError;
 
-	public class EntityRelation implements IRelation {
+	public class Relationship implements IRelationship {
 
 		private var _owningProperty:EntityProperty;
 		public function get owningProperty():EntityProperty {
@@ -35,7 +35,7 @@ package de.karfau.as3.persistence.domain.model {
 			return _inverseProperty;
 		}
 
-		public function EntityRelation(property:EntityProperty) {
+		public function Relationship(property:EntityProperty) {
 			_owningProperty = property;
 		}
 

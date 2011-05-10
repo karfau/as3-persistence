@@ -20,7 +20,7 @@ package de.karfau.as3.persistence.domain {
 
 		public function registerEntity(entity:IEntity):void {
 			if (!canBeModified())
-				throw new IllegalOperationError("This instance has already been analyzed for relations and can not be modified any longer.")
+				throw new IllegalOperationError("This instance has already been analyzed for relations and can not be modified any longer.");
 			var name:String = entity.persistenceName;
 			if (hasPersistanceName(name))
 				throw new ArgumentError("An entity with the persistanceName '" + name + "' has already been set:" + persistanceNames[name]);
@@ -64,7 +64,7 @@ package de.karfau.as3.persistence.domain {
 		}
 
 		public function detectRelations():void {
-			if (canBeModified()) {
+			if (canBeModified() && getRegisteredEntityTypes().length > 0) {
 				relationsAnalysis = new ModelRelationsAnalysis();
 				relationsAnalysis.iterate(this);
 			}

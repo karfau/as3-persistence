@@ -7,9 +7,8 @@
  */
 package de.karfau.as3.persistence.sqlite.operation {
 	import com.jeremyruppel.operations.base.Operation;
-	import com.jeremyruppel.operations.core.IOperation;
+	import com.jeremyruppel.operations.core.IOperationGroup;
 	import com.jeremyruppel.operations.group.OperationGroup;
-	import com.jeremyruppel.operations.group.OperationQueue;
 
 	import de.karfau.as3.persistence.domain.MetaModel;
 	import de.karfau.as3.persistence.operation.IInitializeOperation;
@@ -18,34 +17,17 @@ package de.karfau.as3.persistence.sqlite.operation {
 
 	import flash.data.SQLConnection;
 	import flash.errors.IllegalOperationError;
-	import flash.errors.SQLError;
 
-	public class InitializeOperation extends Operation implements IInitializeOperation {
-
-		//private static var operations:Array = [];
-		//private static var running:InitializeOperation;
+	public class InitializeOperation extends AbstractSequenceOperation implements IInitializeOperation {
 
 		private var connection:SQLConnection;
 		private var metaModel:MetaModel;
 
-		private var sequence:OperationQueue = new OperationQueue();
-		private var sequenceError:Error;
-
 		public function InitializeOperation(connection:SQLConnection, metaModel:MetaModel) {
 			this.connection = connection;
 			this.metaModel = metaModel;
-			super(null, Error, function initSequence(operation:Operation):void {
-				//		running = this;
-				sequence.add(synchronousInit);
-				sequence.failed.add(operation.fail);//TODO:create an error for the payload;
-				sequence.succeeded.add(operation.succeed);
-				sequence.call();
-			});
+			super(null, Error, synchronousInitBlock);
 		}
-
-		private var statements:Vector.<Vector.<String>>;
-
-		private var synchronousInit:Operation = createSafeOperation(synchronousInitBlock);
 
 		private function synchronousInitBlock(operation:Operation):void {
 			if (connection == null || !connection.connected)
@@ -56,103 +38,52 @@ package de.karfau.as3.persistence.sqlite.operation {
 				metaModel.detectRelations();
 
 			const statementCache:StatementCache = new StatementCache();
-			var visitor:CreateTableGenerator = new CreateTableGenerator(statementCache);
+			const visitor:CreateTableGenerator = new CreateTableGenerator(statementCache);
 			visitor.iterate(metaModel);
 
-			statements = statementCache.compileAll();
+			const statements:Vector.<Vector.<String>> = statementCache.compileAll();
 			if (statements.length == 0)
-				throw new IllegalOperationError("No CreateTableSatements were created for execution.");
+				throw new IllegalOperationError("No CreateTable-statements were generated for execution.");
 			else
-				executeNextBatch();
+				createAndAddNextBatch(statements);
 			operation.succeed();
 
 		}
 
-		private function executeNextBatch():void {
+		private function createAndAddNextBatch(statements:Vector.<Vector.<String>>):void {
 
 			if (statements.length > 0) {
 				var parallel:Vector.<String> = statements.shift();
-				var batch:OperationGroup = new OperationGroup();
+				var group:IOperationGroup = (parallel.length == 1) ? sequence : new OperationGroup();
 				for each(var stmt:String in parallel) {
-					batch.add(executeStatement(stmt));
+					addFaillableResponderOperationTo(group, SQLStatementResponderOperation.fromStatementString(stmt, connection),
+					function execution(responderOperation:SQLStatementResponderOperation):void {
+						responderOperation.sqlStatement.execute(-1, responderOperation.responder);
+					});
 				}
-				sequence.add(batch);
-				sequence.add(createSafeOperation(function delayedNextBatch(operation:Operation):void {
-					executeNextBatch();
+				if (group !== sequence) {
+					sequence.add(group);
+				}
+
+				// delay creation and adding of next batch to after current batch has completed by adding doing it to sequence.
+				addFailableOpeartionTo(sequence, function delayedNextBatch(operation:Operation):void {
+					createAndAddNextBatch(statements);
 					operation.succeed();
-				}));
+				});
 			} else {
 				succeed();
 			}
 		}
 
-		private function executeStatement(stmt:String):IOperation {
-			return createSafeOperation(function executeSQL(operation:Operation):void {
-				var execution:SQLStatementOperation = SQLStatementOperation.fromStatementString(stmt, connection);
-				execution.onResult(operation.succeed);
-				execution.onError(function handleSQLErrorEvent(error:SQLError):void {
-					sequenceError = error;
-					fail(sequenceError);
-				});
-				execution.sqlStatement.execute(-1, execution.responder);
-			});
-		}
-
-		private function createSafeOperation(block:Function, ...arguments):Operation {
-			return new Operation(null, Error, function safeBlock(operation:Operation):void {
-				try {
-					if (block.length > arguments.length)
-						arguments = [operation].concat(arguments);
-					block.apply(null, arguments);
-					//operation.succeed();
-				} catch(error:Error) {
-					sequenceError = error;
-					fail(error);
-				}
-			});
-		}
-
 		public function onInitializeComplete(handler:Function):IInitializeOperation {
-			succeeded.add(handler);
-			if (delaySucceed != null) {
-				delaySucceed();
-			}
+			addSuccessHandler(handler);
 			return this;
 		}
 
 		public function onInitializeFailed(handler:Function):IInitializeOperation {
-			failed.add(handler);
-			if (delayFail != null) {
-				delayFail();
-			}
+			addFailedHandler(handler);
 			return this;
 		}
 
-		private var delayFail:Function;
-
-		override public function fail(payload:* = null):void {
-			if (!(payload as Boolean))
-				payload = sequenceError;
-
-			if (failed.numListeners == 0) {
-				delayFail = function delay():void {
-					fail(payload);
-				}
-			} else {
-				super.fail(payload);
-			}
-		}
-
-		private var delaySucceed:Function;
-
-		override public function succeed(payload:* = null):void {
-			if (succeeded.numListeners == 0) {
-				delaySucceed = function delay():void {
-					succeed(payload);
-				}
-			} else {
-				super.succeed(payload);
-			}
-		}
 	}
 }

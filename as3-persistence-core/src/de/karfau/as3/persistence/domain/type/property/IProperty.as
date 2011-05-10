@@ -7,7 +7,7 @@
  */
 package de.karfau.as3.persistence.domain.type.property {
 	import de.karfau.as3.persistence.domain.metatag.relation.IMetaTagRelation;
-	import de.karfau.as3.persistence.domain.model.IRelation;
+	import de.karfau.as3.persistence.domain.model.IRelationship;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 
 	public interface IProperty {
@@ -25,7 +25,7 @@ package de.karfau.as3.persistence.domain.type.property {
 
 		function get relationTag():IMetaTagRelation;
 
-		function get relation():IRelation;
+		function get relation():IRelationship;
 
 		function isOwningRelation():Boolean;
 

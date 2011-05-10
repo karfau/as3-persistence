@@ -7,7 +7,7 @@
  */
 package de.karfau.as3.persistence.sqlite.model {
 	import de.karfau.as3.persistence.domain.model.BaseModelIterator;
-	import de.karfau.as3.persistence.domain.model.IRelation;
+	import de.karfau.as3.persistence.domain.model.IRelationship;
 	import de.karfau.as3.persistence.domain.type.IEntity;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
 	import de.karfau.as3.persistence.domain.type.property.IProperty;
@@ -92,7 +92,7 @@ package de.karfau.as3.persistence.sqlite.model {
 			visitProperty(property);
 		}
 
-		private function JoinTableFromRelation(relation:IRelation):CreateTableStatement {
+		private function JoinTableFromRelation(relation:IRelationship):CreateTableStatement {
 			var name:String =
 					[
 						relation.owningEntity.persistenceName,

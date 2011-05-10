@@ -11,27 +11,27 @@ package de.karfau.as3.persistence.sqlite.operation {
 	import flash.data.SQLConnection;
 	import flash.data.SQLStatement;
 
-	public class SQLStatementOperation extends BaseResponderOperation {
+	public class SQLStatementResponderOperation extends BaseResponderOperation {
 
-		public static function fromStatementString(statement:String, connection:SQLConnection):SQLStatementOperation {
+		public static function fromStatementString(statement:String, connection:SQLConnection):SQLStatementResponderOperation {
 			var stmt:SQLStatement = new SQLStatement();
 			stmt.text = statement;
 			stmt.sqlConnection = connection;
-			return new SQLStatementOperation(stmt);
+			return new SQLStatementResponderOperation(stmt);
 		}
 
 		public var sqlStatement:SQLStatement;
 
-		public function SQLStatementOperation(sqlStatement:SQLStatement) {
+		public function SQLStatementResponderOperation(sqlStatement:SQLStatement) {
 			this.sqlStatement = sqlStatement;
 		}
 
-		public function onResult(handler:Function):SQLStatementOperation {
+		public function onResult(handler:Function):SQLStatementResponderOperation {
 			addSucessHandler(handler);
 			return this;
 		}
 
-		public function onError(handler:Function):SQLStatementOperation {
+		public function onError(handler:Function):SQLStatementResponderOperation {
 			addErrorHandler(handler);
 			return this;
 		}

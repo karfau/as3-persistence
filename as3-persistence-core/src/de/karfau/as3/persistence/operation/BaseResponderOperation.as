@@ -58,7 +58,7 @@ package de.karfau.as3.persistence.operation {
 			return _resultType.value ? successHandlers : errorHandlers;
 		}
 
-		protected function addSucessHandler(handler:Function):void {
+		public function addSucessHandler(handler:Function):void {
 			if (successHandlers == null) {
 				successHandlers = [];
 			}
@@ -66,7 +66,7 @@ package de.karfau.as3.persistence.operation {
 			dispatchResult();
 		}
 
-		protected function addErrorHandler(handler:Function):void {
+		public function addErrorHandler(handler:Function):void {
 			if (errorHandlers == null) {
 				errorHandlers = [];
 			}
