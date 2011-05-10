@@ -8,8 +8,6 @@
 package de.karfau.as3.persistence.domain.type.property {
 	import de.karfau.as3.persistence.domain.type.TypeUtil;
 
-	import org.spicefactory.lib.reflect.Property;
-
 	public class NumericIdentifier extends EntityProperty implements IIdentifier {
 
 		public function NumericIdentifier(rawClass:Class) {
@@ -17,10 +15,6 @@ package de.karfau.as3.persistence.domain.type.property {
 			//super(...) is not allowed after throw
 			if (!TypeUtil.isNumericType(rawClass))
 				throw new ArgumentError("Expected a numeric class, but was " + rawClass + ".");
-		}
-
-		override public function fromReflectionSource(source:Property):void {
-			super.fromReflectionSource(source);
 		}
 
 		override public function accept(visitor:IPropertyVisitor):void {

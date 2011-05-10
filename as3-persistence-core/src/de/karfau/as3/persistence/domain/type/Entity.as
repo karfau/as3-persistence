@@ -12,7 +12,31 @@ package de.karfau.as3.persistence.domain.type {
 
 	import flash.utils.Dictionary;
 
-	public class Entity extends AbstractType implements IEntity {
+	import org.spicefactory.lib.reflect.ClassInfo;
+
+	public class Entity implements IEntity {
+
+		protected var _clazz:Class;
+
+		public function getClassInfo():ClassInfo {
+			return ClassInfo.forClass(_clazz);
+		}
+
+		public function get clazz():Class {
+			return _clazz;
+		}
+
+		public function isNumeric():Boolean {
+			return TypeUtil.isNumericType(_clazz);
+		}
+
+		public function getSimpleName():String {
+			return getClassInfo().simpleName;
+		}
+
+		public function getQualifiedName():String {
+			return getClassInfo().name;
+		}
 
 		protected var _persistenceName:String;
 
@@ -25,6 +49,7 @@ package de.karfau.as3.persistence.domain.type {
 		}
 
 		private var _identifier:IIdentifier;
+
 		public function get identifier():IIdentifier {
 			return _identifier;
 		}
@@ -32,10 +57,6 @@ package de.karfau.as3.persistence.domain.type {
 		public function set identifier(value:IIdentifier):void {
 			_identifier = value;
 			setProperty(value as EntityProperty);
-		}
-
-		public function Entity(clazz:Class) {
-			super(clazz);
 		}
 
 		private var _properties:Dictionary = new Dictionary();
@@ -61,10 +82,6 @@ package de.karfau.as3.persistence.domain.type {
 
 		public function getProperty(name:String):EntityProperty {
 			return (_properties[name] as EntityProperty);
-		}
-
-		override protected function describeInstance(...rest):Object {
-			return super.describeInstance(rest, {persistenceName: persistenceName});
 		}
 
 		public function setProperty(property:EntityProperty):Boolean {
@@ -112,8 +129,23 @@ package de.karfau.as3.persistence.domain.type {
 			return hasSuperEntity() && _superEntity.hasPropertyWithName(name);
 		}
 
+		public function Entity(clazz:Class) {
+			_clazz = clazz;
+		}
+
 		public function accept(visitor:IEntityVisitor):void {
 			visitor.visitEntity(this);
+		}
+
+		public function toString():String {
+
+			var description:Object = {persistenceName: persistenceName/*primitive:isPrimitive(),entity:!isValue()*/};
+			var info:Array = [];
+			for (var key:String in description) {
+				info[info.length] = key + "=" + description[key];
+			}
+			info.sort();
+			return "[Entity for type <" + getQualifiedName() + ">: " + info.join("; ") + "]";
 		}
 	}
 }

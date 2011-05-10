@@ -26,8 +26,6 @@ package de.karfau.as3.persistence.domain.type {
 
 		function accept(visitor:IEntityVisitor):void;
 
-		//function get nonNavigabelRelations():Vector.<Relationship>;
-
 		function hasSuperEntity():Boolean;
 
 		function getPropertyFromDeclaringEntity(name:String):IProperty;

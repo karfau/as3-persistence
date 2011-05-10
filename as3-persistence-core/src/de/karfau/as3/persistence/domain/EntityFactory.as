@@ -33,7 +33,7 @@ package de.karfau.as3.persistence.domain {
 			Metadata.registerMetadataClass(MetaTagEntity);
 			Metadata.registerMetadataClass(MetaTagId);
 			Metadata.registerMetadataClass(MetaTagArrayElementType);
-			Metadata.registerMetadataClass(MetaTagTransient)
+			Metadata.registerMetadataClass(MetaTagTransient);
 			//Relations:
 			Metadata.registerMetadataClass(MetaTagOneToOne);
 			Metadata.registerMetadataClass(MetaTagOneToMany);
