@@ -44,8 +44,8 @@ package de.karfau.as3.persistence.sqlite.model {
 			} else {
 				currentStmt = new CreateTableStatement(qualifiedName);//TODO: persistanceUnit -> dbname
 			}
-			if (tablesWithDiscriminator[qualifiedName] as Boolean && !currentStmt.hasColumn(CreateTableStatement.DISCRIMINATOR_COLUMN)) {
-				currentStmt.addColumnDefinition(CreateTableStatement.DISCRIMINATOR_COLUMN, String);
+			if (tablesWithDiscriminator[qualifiedName] as Boolean && !currentStmt.hasColumn(Table.DISCRIMINATOR_COLUMN)) {
+				currentStmt.addColumnDefinition(Table.DISCRIMINATOR_COLUMN, String);
 			}
 
 			super.visitEntity(entity);
@@ -72,13 +72,13 @@ package de.karfau.as3.persistence.sqlite.model {
 					} else {//property.relation has no navigable Many-side -> Foreign Key Column
 						const relatedEntity:IEntity = property.getRelatedEntity();
 						type = relatedEntity.identifier.rawClass;
-						constraints.push(CreateTableStatement.FOREIGN_KEY_CLAUSE(qualifiedTableName(relatedEntity), [relatedEntity.identifier.name]));
+						constraints.push(Column.FOREIGN_KEY_CLAUSE(qualifiedTableName(relatedEntity), [relatedEntity.identifier.name]));
 						currentStmt.addRequiredTable(qualifiedTableName(relatedEntity));
 					}
 				} else {//property without relation
 					//name and type are already set correct, find constraints
 					if (property is NumericIdentifier) {
-						constraints.push(CreateTableStatement.PRIMARY_KEY(type != Number));
+						constraints.push(Column.PRIMARY_KEY(type != Number));
 						//implicit NOT NULL, UNIQUE
 					} else {//property is not a Numeric identifier
 						//TODO: other constraints:NOT NULL,UNIQUE,DEFAULT,COLLATE?
@@ -119,12 +119,12 @@ package de.karfau.as3.persistence.sqlite.model {
 
 			var constraints:Array =
 					[
-						CreateTableStatement.NOT_NULL,//TODO: depends on Required
-						CreateTableStatement.FOREIGN_KEY_CLAUSE(qualifiedTableName(re), [re.identifier.name])
+						Column.NOT_NULL,//TODO: depends on Required
+						Column.FOREIGN_KEY_CLAUSE(qualifiedTableName(re), [re.identifier.name])
 					];
 			if (owningProperty.relation.hasNavigableManySide() && owningProperty.relation.hasOneSide()) {
 				if (inverse ? owningProperty.isCollection() : !owningProperty.isCollection())
-					constraints.unshift(CreateTableStatement.UNIQUE);
+					constraints.unshift(Column.UNIQUE);
 			}
 
 			statement.addRequiredTable(qualifiedTableName(re));

@@ -86,10 +86,8 @@ class Printer extends BaseModelIterator {
 
 	private function propertyToString(prop:IProperty, prependEntity:Boolean = false):String {
 		var result:String;
-		with (prop)
-			result = (prependEntity ? declaredBy.getSimpleName() + "." : "") + name + ":" + ClassInfo.forClass(persistentClass).simpleName + (isCollection() ? "(collection)" : "");
+		result = (prependEntity ? prop.declaredBy.getSimpleName() + "." : "") + prop.name + ":" + ClassInfo.forClass(prop.persistentClass).simpleName + (prop.isCollection() ? "(collection)" : "");
 		return result;
-		//return prop.toString();
 	}
 
 	private function trace(...rest):void {

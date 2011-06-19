@@ -10,8 +10,6 @@ package de.karfau.as3.persistence.sqlite.operation {
 	import com.jeremyruppel.operations.core.IOperationGroup;
 	import com.jeremyruppel.operations.group.OperationQueue;
 
-	import de.karfau.as3.persistence.operation.BaseResponderOperation;
-
 	public class AbstractSequenceOperation extends Operation {
 
 		protected var sequence:OperationQueue = new OperationQueue();

@@ -12,6 +12,7 @@ package de.karfau.as3.persistence.sqlite {
 	import de.karfau.as3.persistence.operation.IConnectionOperation;
 	import de.karfau.as3.persistence.operation.IInitializeOperation;
 	import de.karfau.as3.persistence.sqlite.connection.BaseSQLConnectionParams;
+	import de.karfau.as3.persistence.sqlite.model.MetaModelORMDecorator;
 	import de.karfau.as3.persistence.sqlite.operation.ConnectionOperation;
 	import de.karfau.as3.persistence.sqlite.operation.InitializeOperation;
 	import de.karfau.as3.persistence.sqlite.statement.StatementCache;
@@ -50,12 +51,24 @@ package de.karfau.as3.persistence.sqlite {
 		}
 
 		private var _metaModel:MetaModel = new MetaModel();
+		private var _ormDecorator:MetaModelORMDecorator;
+
 		public function get metaModel():MetaModel {
 			return _metaModel;
 		}
 
 		public function set metaModel(value:MetaModel):void {
-			_metaModel = value;
+			if (_metaModel != value) {
+				_metaModel = value;
+				_ormDecorator = null;
+			}
+		}
+
+		public function get decoratedMetaModel():MetaModelORMDecorator {
+			if (_ormDecorator == null) {
+				_ormDecorator = new MetaModelORMDecorator(_metaModel);
+			}
+			return _ormDecorator;
 		}
 
 		private var statementCache:StatementCache;

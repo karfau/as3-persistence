@@ -6,26 +6,15 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.sqlite.statement {
+	import de.karfau.as3.persistence.sqlite.model.Column;
+
 	import flash.utils.Dictionary;
 
 	public class CreateTableStatement {
-		public static const DISCRIMINATOR_COLUMN:String = "__TYPE__";
-
-		public static const NOT_NULL:String = "NOT NULL";
-
-		public static const UNIQUE:String = "UNIQUE";
 
 		private static const PRIMARY_KEY$:String = "PRIMARY KEY";
 
-		public static function PRIMARY_KEY(autoincrement:Boolean):String {
-			return PRIMARY_KEY$ + (autoincrement ? " AUTOINCREMENT" : "");
-		}
-
 		public static const REFERENCES$:String = "REFERENCES ";
-
-		public static function FOREIGN_KEY_CLAUSE(foreignTableName:String, columnNames:Array):String {
-			return REFERENCES$ + foreignTableName + "(" + columnNames.join(",") + ")";
-		}
 
 		public var dbname:String;
 
@@ -63,7 +52,7 @@ package de.karfau.as3.persistence.sqlite.statement {
 			for each(var cDef:ColumnDefinition in _columns) {
 				if (cDef.hasConstraint(PRIMARY_KEY$))
 					pks.push(cDef);
-				else if (cDef.hasConstraint(REFERENCES$))
+				else if (cDef.hasConstraint(Column.REFERENCES$))
 					fks.push(cDef);
 				else
 					result.push(cDef);

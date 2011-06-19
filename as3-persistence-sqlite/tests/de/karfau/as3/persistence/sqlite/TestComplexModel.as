@@ -10,9 +10,10 @@ package de.karfau.as3.persistence.sqlite {
 	import de.karfau.as3.persistence.domain.MetaModel;
 	import de.karfau.as3.persistence.domain.photos.*;
 	import de.karfau.as3.persistence.sqlite.connection.InMemoryConnection;
-	import de.karfau.as3.persistence.sqlite.model.CreateTableGenerator;
+	import de.karfau.as3.persistence.sqlite.model.ITable;
+	import de.karfau.as3.persistence.sqlite.model.MetaModelORMDecorator;
+	import de.karfau.as3.persistence.sqlite.model.ORMappingGenerator;
 	import de.karfau.as3.persistence.sqlite.operations.AsyncOperationHandler;
-	import de.karfau.as3.persistence.sqlite.statement.StatementCache;
 
 	import flash.filesystem.File;
 
@@ -45,7 +46,7 @@ package de.karfau.as3.persistence.sqlite {
 			model.registerEntity(factory.createEntity(Person));
 			model.registerEntity(factory.createEntity(Photographer));
 
-			//model.detectRelations();
+			model.detectRelations();
 			async = new AsyncOperationHandler(this, 1000);
 			var dbfile:File = File.desktopDirectory.resolvePath("beweis.sqlite");
 			provider.connect(InMemoryConnection.Connection())
@@ -65,22 +66,31 @@ package de.karfau.as3.persistence.sqlite {
 		}
 
 		[Test]
-		[Ignore]
-		public function testCreateTableGenerator():void {
-			var stmtCache:StatementCache = new StatementCache();
-			var generator:CreateTableGenerator = new CreateTableGenerator(stmtCache);
+		//[Ignore]
+		public function testORMappingGenerator():void {
+			var orm:MetaModelORMDecorator = new MetaModelORMDecorator(provider.metaModel);
+			var generator:ORMappingGenerator = new ORMappingGenerator(orm);
 			generator.iterate(provider.metaModel);
-			var statements:Vector.<Vector.<String>> = stmtCache.compileAll();
+			var tables:Vector.<Vector.<ITable>> = orm.getTablesInExecutableOrder();
 			var batches:Array = [];
-			for each(var parallel:Vector.<String> in statements) {
-				batches.push("{{\n" + parallel.join(";\n") + ";\n}}");
+			var batch:Array;
+			{ //noinspection JSMismatchedCollectionQueryUpdateInspection
+				var parallel:Vector.<ITable>
+			}
+			for each(parallel in tables) {
+				batch = [];
+				for each(var table:ITable in parallel) {
+					batch.push(table.createDDL());
+				}
+				batches.push("{{\n" + batch.join(";\n") + ";\n}}");
 			}
 			var flat:String = batches.join("\n");
 
-			assertThat("batches", batches, arrayWithSize(3));
+			assertThat("tables", tables, arrayWithSize(3));
 		}
 
 		[Test(async,timeout="300000")]
+		[Ignore]
 		public function initFromModel():void {
 			async = new AsyncOperationHandler(this, 300000);
 			provider.initializePersistentModel()

@@ -6,8 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 package de.karfau.as3.persistence.sqlite.operation {
-	import de.karfau.as3.persistence.operation.BaseResponderOperation;
-
 	import flash.data.SQLConnection;
 	import flash.data.SQLStatement;
 

@@ -15,6 +15,7 @@ package de.karfau.as3.persistence.domain {
 	import de.karfau.as3.persistence.domain.type.property.ClassPropertiesAnalysis;
 	import de.karfau.as3.persistence.domain.type.property.EntityProperty;
 	import de.karfau.as3.persistence.domain.type.property.IIdentifier;
+	import de.karfau.as3.persistence.domain.type.property.IProperty;
 	import de.karfau.as3.persistence.domain.type.property.NumericIdentifier;
 
 	import flash.geom.Point;
@@ -69,7 +70,7 @@ package de.karfau.as3.persistence.domain {
 			assertThat("should not create types for primitive properties", factory.typeRegister.hasTypeFor(String), isFalse());
 			assertThat("should not create types for collection properties", factory.typeRegister.hasTypeFor(Class(Vector.<Motif>)), isFalse());
 			assertThat("should not create types for entity properties", factory.typeRegister.hasTypeFor(GeoLocation), isFalse());
-			var property:EntityProperty = entity.getProperty("motifes");
+			var property:EntityProperty = entity.getProperty("motifes") as EntityProperty;
 			assertThat("'motifes' should have " + Motif + " as persistentClass", property, hasPropertyWithValue("persistentClass", Motif));
 
 			assertThat("creating same again, returns same instance:", entity, strictlyEqualTo(factory.createEntity(Photo)));
@@ -116,10 +117,10 @@ package de.karfau.as3.persistence.domain {
 			var identifier:IIdentifier = entity.identifier;
 			assertThat("primaryKey was detected", identifier, matchesValidIdentifier(identifier, Camera.IDENTIFIER_NAME));
 
-			var properties:Vector.<EntityProperty> = entity.getAllProperties();
+			var properties:Vector.<IProperty> = entity.getAllProperties();
 			assertThat("primary key is in properties", properties, hasItem(identifier));
 
-			var property:EntityProperty = entity.getProperty("photos");
+			var property:IProperty = entity.getProperty("photos");
 			assertThat("'photos' should have " + Photo + " as persistentClass", property, hasPropertyWithValue("persistentClass", Photo));
 		}
 

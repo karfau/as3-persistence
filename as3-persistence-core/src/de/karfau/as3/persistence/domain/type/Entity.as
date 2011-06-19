@@ -61,8 +61,8 @@ package de.karfau.as3.persistence.domain.type {
 
 		private var _properties:Dictionary = new Dictionary();
 
-		public function getAllProperties(filter:Function = null):Vector.<EntityProperty> {
-			var result:Vector.<EntityProperty> = new Vector.<EntityProperty>();
+		public function getAllProperties(filter:Function = null):Vector.<IProperty> {
+			var result:Vector.<IProperty> = new Vector.<IProperty>();
 			for each(var prop:EntityProperty in _properties) {
 				if (filter == null || filter(prop))
 					result.push(prop);
@@ -70,9 +70,9 @@ package de.karfau.as3.persistence.domain.type {
 			return result;
 		}
 
-		public function getPropertiesByPersistentClass(persistentClass:Class):Vector.<EntityProperty> {
-			return getAllProperties(function (property:EntityProperty):Boolean {
-				return property.persistentClass == persistentClass
+		public function getPropertiesByPersistentClass(persistentClass:Class):Vector.<IProperty> {
+			return getAllProperties(function (property:IProperty):Boolean {
+				return property.persistentClass == persistentClass;
 			});
 		}
 
@@ -80,7 +80,7 @@ package de.karfau.as3.persistence.domain.type {
 			return _properties.hasOwnProperty(name)
 		}
 
-		public function getProperty(name:String):EntityProperty {
+		public function getProperty(name:String):IProperty {
 			return (_properties[name] as EntityProperty);
 		}
 
@@ -104,9 +104,10 @@ package de.karfau.as3.persistence.domain.type {
 
 		public function get superRootEntity():IEntity {
 			var result:IEntity = _superEntity;
-			while (result.hasSuperEntity()) {
-				result = result.superEntity;
-			}
+			if (result != null)
+				while (result.hasSuperEntity()) {
+					result = result.superEntity;
+				}
 			return result;
 		}
 

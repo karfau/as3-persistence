@@ -40,8 +40,8 @@ package de.karfau.as3.persistence.domain.model.analysis {
 					!currentEntity.isPropertyInheritedFromSuperEntity(property.name) &&
 					(property.relationTag == null || !property.relationTag.isInverseSide())) {
 
-				var inverseEntity:IEntity = model.getRegisteredEntityType(property.persistentClass);
-				var inverseProperties:Vector.<EntityProperty> = inverseEntity.getPropertiesByPersistentClass(currentEntity.clazz);
+				var inverseEntity:IEntity = model.getRegisteredEntityByType(property.persistentClass);
+				var inverseProperties:Vector.<IProperty> = inverseEntity.getPropertiesByPersistentClass(currentEntity.clazz);
 				var inverseProperty:EntityProperty;
 
 				var relation:Relationship = new Relationship(EntityProperty(property));
@@ -55,14 +55,15 @@ package de.karfau.as3.persistence.domain.model.analysis {
 				} else {//bidirectional mapping
 					/*there is a special/common case with only ONE inverseProperty:*/
 					if (inverseProperties.length == 1) {
-						if (!isSuitableInverseMapping(property, inverseProperties[0])) {
+						var suitable:Boolean = isSuitableInverseMapping(property, inverseProperties[0]);
+						if (!suitable) {
 							var errorMsg:String = "The only relation-mapping found for " + (property.relationTag ? property.relationTag.toString(property) : property) +
 																		" was " + (inverseProperties[0].relationTag ? inverseProperties[0].relationTag.toString(inverseProperties[0]) : inverseProperties[0]) + ".\n";
 
 							/* Only one exists and this one is not suitable means:
 							 property   | mapping					 | solution
 							 -----------|------------------|--------------
-							 nothing    | [owning]				 | ignore/dont create Relation: has been detected or will bedetected
+							 nothing    | [owning]				 | ignore/dont create Relation: has been detected or will be detected on owning side
 							 [owning]   | [owning]				 | could be two unidirectional mappings? Not implemented yet.
 							 nothing    | nothing    			 | Error: for Bidirectional relations 1 MetaTag is required
 							 nothing or |                  |
@@ -85,7 +86,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 
 						}
 					}
-					for each(var iprop:EntityProperty in inverseProperties) {
+					for each(var iprop:IProperty in inverseProperties) {
 						if (isSuitableInverseMapping(property, iprop)) {
 							if (inverseProperty != null) {
 								throw new SyntaxError("When analysing " + inverseEntity + " for the relation from " + property.relationTag.toString(property) +
@@ -94,7 +95,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 																			"\t" + iprop.relationTag.toString(iprop) + "\n" +
 																			"And it was ambiguous which one to use.");
 							} else {
-								inverseProperty = iprop;
+								inverseProperty = iprop as EntityProperty;
 							}
 						}
 					}
@@ -109,7 +110,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 							other.validateCardinality(getReflectionProperty(property));
 							EntityProperty(property).relationTag = other;
 						} else if (inverseProperty.relationTag == null) {
-							other = property.relationTag.createInverseSide(property.name)
+							other = property.relationTag.createInverseSide(property.name);
 							other.validateCardinality(getReflectionProperty(inverseProperty));
 							EntityProperty(inverseProperty).relationTag = other;
 						}
@@ -124,8 +125,15 @@ package de.karfau.as3.persistence.domain.model.analysis {
 		}
 
 		private function isSuitableInverseMapping(owning:IProperty, candidate:IProperty):Boolean {
-			return (owning.relationTag && !owning.relationTag.isInverseSide() && candidate.relationTag == null) ||
-						 (owning.relationTag == null && candidate.relationTag != null && candidate.relationTag.isInverseSide() && candidate.relationTag.mappedBy == owning.name)
+			var result:Boolean = false;
+			if (owning.relationTag == null) {
+				if (candidate.relationTag != null) {
+					result = candidate.relationTag.isInverseSide() && candidate.relationTag.mappedBy == owning.name;
+				}
+			} else {
+				result = !owning.relationTag.isInverseSide() && candidate.relationTag == null;
+			}
+			return result;
 		}
 
 		private function getReflectionProperty(from:IProperty):Property {

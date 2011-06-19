@@ -13,10 +13,10 @@ package de.karfau.as3.persistence.domain {
 	import flash.errors.IllegalOperationError;
 	import flash.utils.Dictionary;
 
-	public class MetaModel {
+	public class MetaModel implements IMetaModel {
 
-		public const persistanceNames:Dictionary = new Dictionary();
-		public const classes:Dictionary = new Dictionary();
+		private const persistanceNames:Dictionary = new Dictionary();
+		private const classes:Dictionary = new Dictionary();
 
 		public function registerEntity(entity:IEntity):void {
 			if (!canBeModified())
@@ -39,7 +39,7 @@ package de.karfau.as3.persistence.domain {
 			return classes[clazz] is IEntity;
 		}
 
-		public function getRegisteredEntityType(clazz:Class):IEntity {
+		public function getRegisteredEntityByType(clazz:Class):IEntity {
 			return classes[clazz] as IEntity;
 		}
 

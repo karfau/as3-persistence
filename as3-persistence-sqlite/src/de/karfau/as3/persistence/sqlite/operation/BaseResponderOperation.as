@@ -5,7 +5,7 @@
  * Time: 11:33
  * To change this template use File | Settings | File Templates.
  */
-package de.karfau.as3.persistence.operation {
+package de.karfau.as3.persistence.sqlite.operation {
 	import flash.errors.IllegalOperationError;
 	import flash.net.Responder;
 

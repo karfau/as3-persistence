@@ -48,9 +48,9 @@ package de.karfau.as3.persistence.sqlite.operation {
 	}
 }
 
-import de.karfau.as3.persistence.operation.BaseResponderOperation;
 import de.karfau.as3.persistence.operation.IConnectionOperation;
 import de.karfau.as3.persistence.sqlite.connection.BaseSQLConnectionParams;
+import de.karfau.as3.persistence.sqlite.operation.BaseResponderOperation;
 
 import flash.data.SQLConnection;
 

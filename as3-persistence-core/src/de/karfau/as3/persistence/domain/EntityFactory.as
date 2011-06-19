@@ -75,7 +75,7 @@ package de.karfau.as3.persistence.domain {
 				result = new Entity(info.getClass());
 				result.persistenceName = detectPersistenceName(info.classInfo);
 
-				result.identifier = identifier
+				result.identifier = identifier;
 				for each(var property:Property in info.persistableProperties) {
 					if (property.name != identifier.name)
 						result.setProperty(createEntityProperty(property));

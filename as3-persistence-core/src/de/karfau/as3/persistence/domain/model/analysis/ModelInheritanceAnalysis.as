@@ -20,7 +20,7 @@ package de.karfau.as3.persistence.domain.model.analysis {
 				superClass = ClassInfo.forClass(superClass).getSuperClass();
 			}
 			if (model.isRegisteredEntityType(superClass))
-				Entity(entity).superEntity = model.getRegisteredEntityType(superClass);
+				Entity(entity).superEntity = model.getRegisteredEntityByType(superClass);
 		}
 	}
 }
